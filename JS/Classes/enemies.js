@@ -1,5 +1,5 @@
-class Citizen {
-  constructor(ctx, posX, posY, width, height, speedY) {
+class Enemy {
+  constructor(ctx, posX, posY, width, height, speedX, health) {
     this.ctx = ctx;
     this.pos = {
       x: posX,
@@ -12,8 +12,9 @@ class Citizen {
     };
 
     this.speed = {
-      y: speedY,
+      x: speedX,
     };
+    this.health = health;
     // this.image = undefined;
     // this.arrayCaracteres = {};
     this.draw(); //cambiar a init cuando sea imagen
@@ -32,7 +33,7 @@ class Citizen {
     //   this.width,
     //   this.height
     // );
-    this.ctx.fillStyle = "yellow";
+    this.ctx.fillStyle = "purple";
     this.ctx.fillRect(
       this.pos.x,
       this.pos.y,
@@ -40,20 +41,14 @@ class Citizen {
       this.size.height
     );
   }
-
   move() {
-    this.pos.y -= this.speed.y;
+    this.pos.x -= this.speed.x;
   }
-
-  colision(goal, saveCitizens) {
-    if (
-      this.pos.y < goal.posY + goal.height &&
-      this.size.height + this.pos.y - 100 > goal.posY
-    ) {
-      saveCitizens++;
-      //console.log("colision");
-    } else {
-      //console.log("no colision");
-    }
-  }
+  // colision(){
+  //     this.health -=1
+  // }
 }
+
+// class Enemy1 extends Enemy{
+//     constructor(ctx, posX, posY, width, height, speedX,health)
+// }
