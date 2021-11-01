@@ -1,5 +1,15 @@
 class Player {
-  constructor(ctx, posX, posY, width, height, speed) {
+  constructor(
+    ctx,
+    posX,
+    posY,
+    width,
+    height,
+    speed,
+    imageName,
+    frameX,
+    frameY
+  ) {
     this.ctx = ctx;
     this.pos = {
       x: posX,
@@ -10,6 +20,9 @@ class Player {
       width: width,
       height: height,
     };
+    this.frameX = frameX;
+
+    this.frameY = frameY;
 
     this.speed = speed;
 
@@ -18,26 +31,28 @@ class Player {
       height: window.innerHeight,
     };
 
-    // this.image = undefined;
-    // this.arrayCaracteres = {};
-    this.init(); //cambiar a init cuando sea imagen
+    this.imageInstance = undefined;
+    this.imageName = imageName;
+
+    this.init();
   }
 
   init() {
-    this.draw();
+    this.imageInstance = new Image();
+    this.imageInstance.src = `images/${this.imageName}`;
   }
-
-  draw() {
-    this.ctx.fillStyle = "white";
-    this.ctx.fillRect(
+  drawSprite() {
+    this.ctx.drawImage(
+      this.imageInstance,
       this.pos.x,
       this.pos.y,
       this.size.width,
       this.size.height
     );
   }
+
   minusMoveY() {
-    if (this.pos.y > this.canvasSize.height / 5) {
+    if (this.pos.y > (this.canvasSize.height / 10) * 3) {
       this.pos.y -= this.speed;
     }
   }

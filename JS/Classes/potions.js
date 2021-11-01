@@ -32,11 +32,4 @@ class Potions {
       this.size.height
     );
   }
-
-  move() {
-    if (this.pos.y < -this.size.height) {
-      this.pos.y = 0;
-    }
-    this.pos.y -= 10;
-  }
 }

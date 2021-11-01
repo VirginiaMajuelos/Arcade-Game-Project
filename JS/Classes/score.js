@@ -10,7 +10,7 @@ class Score {
   }
 
   draw(saveCitizens, eliminatedCitizens) {
-    this.ctx.fillStyle = "black";
+    this.ctx.fillStyle = "white";
     this.ctx.fillText("Score", this.pos.x, this.pos.y);
     this.ctx.font = "24px serif";
     this.ctx.fillText(

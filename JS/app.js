@@ -14,6 +14,7 @@ const gameStart = {
   player: undefined,
   potion1: undefined,
   saveCitizens: 0,
+  waveGenerator: 0,
   eliminatedCitizens: 0,
   intervalId: 0,
   framesCount: 0,
@@ -51,8 +52,6 @@ const gameStart = {
   },
 
   start() {
-    this.randomPotions1 = Math.floor(Math.random() * 10);
-
     this.intervalId = setInterval(() => {
       this.framesCount++;
 
@@ -60,19 +59,36 @@ const gameStart = {
         this.framesCount = 0;
       }
 
-      if (this.framesCount % 40 === 0) {
+      if (this.framesCount % 120 === 0) {
         this.createCitizens();
       }
-
-      if (this.framesCount % 20 === 0) {
-        this.createEnemies();
+      if (this.framesCount % (60 - this.waveGenerator) === 0) {
+        console.log(this.waveGenerator);
+        this.createEnemy1();
       }
-      if (this.framesCount % (60 * this.randomPotions1) === 0) {
+      if (this.saveCitizens >= 90) {
+        if (this.framesCount % 60 === 0) {
+          this.createEnemy2();
+        }
+      }
+
+      if (this.framesCount % 900 === 0) {
         this.createPotion1();
+      }
+
+      if (this.framesCount % 900 === 0) {
+        this.createPotion2();
+      }
+
+      if (this.framesCount % 1800 === 0) {
+        this.createPotion3();
       }
 
       this.clearScreen();
       this.colisionPlayerEnemy();
+      this.colisionPlayerPotion1();
+      this.colisionPlayerPotion2();
+      this.colisionPlayerPotion3();
       this.moveAll();
       this.drawAll();
 
@@ -82,19 +98,18 @@ const gameStart = {
 
   createAll() {
     this.createBackgroundSky();
-    this.createBackgroundShip();
     this.createScoreBoard();
     this.createPlayer();
   },
 
   drawAll() {
-    this.createPlayBoard();
     this.drawBackgroundSky();
-    this.drawBackground();
     this.drawPlayer();
     this.drawCitizens();
     this.drawEnemies();
     this.drawPotion1();
+    this.drawPotion2();
+    this.drawPotion3();
     this.drawScoreBoard();
   },
 
@@ -110,7 +125,7 @@ const gameStart = {
   },
 
   drawPlayer() {
-    this.player.draw();
+    this.player.drawSprite();
   },
 
   drawEnemies() {
@@ -120,8 +135,20 @@ const gameStart = {
   },
 
   drawPotion1() {
-    this.allPotions.forEach((enemy) => {
-      enemy.draw();
+    this.allPotions.forEach((potion1) => {
+      potion1.draw();
+    });
+  },
+
+  drawPotion2() {
+    this.allPotions.forEach((potion2) => {
+      potion2.draw();
+    });
+  },
+
+  drawPotion3() {
+    this.allPotions.forEach((potion3) => {
+      potion3.draw();
     });
   },
 
@@ -135,16 +162,8 @@ const gameStart = {
     this.sky.draw();
   },
 
-  drawBackground() {
-    this.goal.draw();
-  },
-
   drawScoreBoard() {
     this.scoreBoard.draw(this.saveCitizens, this.eliminatedCitizens);
-  },
-
-  movePotion1() {
-    this.potion1.move();
   },
 
   moveEnemies() {
@@ -159,30 +178,14 @@ const gameStart = {
     this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
   },
 
-  createPlayBoard() {
-    this.ctx.fillStyle = "green";
-    this.ctx.fillRect(0, 0, this.canvasSize.width, this.canvasSize.height);
-  },
-
   createBackgroundSky() {
     this.sky = new Background(
       this.ctx,
       0,
       0,
       this.canvasSize.width,
-      this.canvasSize.height / 5,
-      "sky.png"
-    );
-  },
-
-  createBackgroundShip() {
-    this.goal = new Background(
-      this.ctx,
-      0,
-      0,
-      this.canvasSize.width / 5,
-      (this.canvasSize.height / 5) * 2,
-      "descarga.jpeg"
+      this.canvasSize.height,
+      "Fondo1.png"
     );
   },
 
@@ -191,9 +194,9 @@ const gameStart = {
 
     this.randomNumberY = this.canvasSize.height * Math.random();
 
-    this.minimunRoadY = this.canvasSize.height / 5;
+    this.minimunRoadY = (this.canvasSize.height / 5) * 2;
 
-    this.minimunRoadX = (this.canvasSize.width / 5) * 2 + 50;
+    this.minimunRoadX = (this.canvasSize.width / 10) * 2;
 
     this.positionYPotions = this.minimunRoadY + this.randomNumberY;
 
@@ -211,14 +214,67 @@ const gameStart = {
     );
   },
 
+  createPotion2() {
+    this.randomNumberX = this.canvasSize.width * Math.random();
+
+    this.randomNumberY = this.canvasSize.height * Math.random();
+
+    this.minimunRoadY = (this.canvasSize.height / 5) * 2;
+
+    this.minimunRoadX = (this.canvasSize.width / 10) * 2;
+
+    this.positionYPotions = this.minimunRoadY + this.randomNumberY;
+
+    this.positionXPotions = this.minimunRoadX + this.randomNumberX;
+
+    this.allPotions.push(
+      new Potions(
+        this.ctx,
+        this.positionXPotions,
+        this.positionYPotions,
+        50,
+        50,
+        "PocionVerde.png"
+      )
+    );
+  },
+
+  createPotion3() {
+    this.randomNumberX = this.canvasSize.width * Math.random();
+
+    this.randomNumberY = this.canvasSize.height * Math.random();
+
+    this.minimunRoadY = (this.canvasSize.height / 5) * 2;
+
+    this.minimunRoadX = (this.canvasSize.width / 10) * 2;
+
+    this.positionYPotions = this.minimunRoadY + this.randomNumberY;
+
+    this.positionXPotions = this.minimunRoadX + this.randomNumberX;
+
+    this.allPotions.push(
+      new Potions(
+        this.ctx,
+        this.positionXPotions,
+        this.positionYPotions,
+        50,
+        50,
+        "PocionNegra.png"
+      )
+    );
+  },
+
   createPlayer() {
     this.player = new Player(
       this.ctx,
       this.canvasSize.width / 2,
       this.canvasSize.height / 2,
-      100,
-      100,
-      30
+      101,
+      140,
+      30,
+      "Hulk.png",
+      0,
+      0
     );
     //Definir posteriormente velocidad del jugador para los potenciadores
   },
@@ -235,14 +291,14 @@ const gameStart = {
         this.ctx,
         this.positionXCitizen,
         this.canvasSize.height,
-        30,
-        30,
+        101,
+        140,
         this.speedYCitizens
       )
     ); //Afinar tamaño de los ciudadanos
   },
 
-  createEnemies() {
+  createEnemy1() {
     this.randomRoad = Math.floor(Math.random() * 4);
 
     this.minimunRoad = (this.canvasSize.height / 5) * 2;
@@ -255,9 +311,26 @@ const gameStart = {
         this.ctx,
         this.canvasSize.width - 40,
         this.positionYEnemies,
-        40,
-        40,
+        101,
+        140,
         5
+      )
+    );
+  },
+
+  createEnemy2() {
+    this.randomRoad = Math.floor(Math.random() * 4);
+    this.minimunRoad = (this.canvasSize.height / 5) * 2;
+    this.positionYEnemies =
+      this.minimunRoad + (this.canvasSize.height / 4) * this.randomRoad;
+    this.allEnemies.push(
+      new Enemy(
+        this.ctx,
+        this.canvasSize.width - 40,
+        this.positionYEnemies,
+        101,
+        140,
+        10
       )
     );
   },
@@ -276,55 +349,115 @@ const gameStart = {
       }
     });
   },
+
   colisionPlayerPotion1() {
-    this.allPotions.map((potion, i) => {
+    this.allPotions.map((potion1, i) => {
       if (
-        this.player.pos.x < potion.pos.x + potion.size.width &&
-        this.player.pos.x + this.player.size.width > potion.pos.x &&
-        this.player.pos.y < potion.pos.y + potion.size.height &&
-        this.player.size.height + this.player.pos.y > potion.pos.y
+        this.player.pos.x < potion1.pos.x + potion1.size.width &&
+        this.player.pos.x + this.player.size.width > potion1.pos.x &&
+        this.player.pos.y < potion1.pos.y + potion1.size.height &&
+        this.player.size.height + this.player.pos.y > potion1.pos.y
       ) {
         this.allPotions.splice(i, 1);
-        this.player.speed *= 2;
+        this.player.speed = 1.1 * this.player.speed;
       } else {
         return false;
       }
     });
   },
 
-  clearEnemies() {
-    this.allEnemies = this.allEnemies.filter((enemy) => {
-      console.log(this.colisionPlayerEnemy());
+  colisionPlayerPotion2() {
+    this.allPotions.map((potion2, i) => {
       if (
-        enemy.pos.x > this.canvasSize.width / 5 ||
-        this.colisionPlayerEnemy()
+        this.player.pos.x < potion2.pos.x + potion2.size.width &&
+        this.player.pos.x + this.player.size.width > potion2.pos.x &&
+        this.player.pos.y < potion2.pos.y + potion2.size.height &&
+        this.player.size.height + this.player.pos.y > potion2.pos.y
       ) {
-        return true;
+        this.allPotions.splice(i, 1);
+        this.enemy.speed = 0.9 * this.enemy.speed;
       } else {
-        this.eliminatedCitizens++;
-        this.scoreBoard.increaseScoreEnemies(this.eliminatedCitizens);
+        return false;
       }
     });
+  },
+
+  colisionPlayerPotion3() {
+    this.allPotions.map((potion3, i) => {
+      if (
+        this.player.pos.x < potion3.pos.x + potion3.size.width &&
+        this.player.pos.x + this.player.size.width > potion3.pos.x &&
+        this.player.pos.y < potion3.pos.y + potion3.size.height &&
+        this.player.size.height + this.player.pos.y > potion3.pos.y
+      ) {
+        this.allPotions.splice(i, 1);
+        this.randomChance = Math.floor(Math.random() * 100);
+        if (this.randomChance < 49) {
+          this.player.speed *= 1.1;
+        } else if (49 <= this.randomChance < 98) {
+          this.enemy.speed *= 1.1;
+        } else {
+          gameOver();
+        }
+      } else {
+        return false;
+      }
+    });
+  },
+
+  colisionEnemiesCiticens() {
+    this.allEnemies.map((enemy, i) => {
+      this.allCitizens.map((citizen, j) => {
+        if (
+          enemy.pos.x < citizen.pos.x + citizen.size.width &&
+          enemy.pos.x + enemy.size.width > citizen.pos.x &&
+          enemy.pos.y < citizen.pos.y + citizen.size.height &&
+          enemy.pos.y + enemy.size.height > citizen.pos.y
+        ) {
+          this.allEnemies.splice(i, 1);
+          this.allCitizens.splice(j, 1);
+          this.eliminatedCitizens++;
+          this.scoreBoard.increaseScoreEnemies(this.eliminatedCitizens);
+          if (this.eliminatedCitizens === 10) {
+            this.gameOver();
+          }
+        } else {
+          return false;
+        }
+      });
+    });
+  },
+
+  clearEnemies() {
+    if (this.colisionPlayerEnemy() || this.colisionEnemiesCiticens()) {
+      return true;
+    }
   },
 
   clearCitizens() {
     this.allCitizens = this.allCitizens.filter((citizen) => {
       if (citizen.pos.y > (this.canvasSize.height / 5) * 2) {
         return true;
-      } else {
-        this.saveCitizens++;
-        this.scoreBoard.increaseScorePlayer(this.saveCitizens);
-      }
-    });
-  },
-
-  clearPotion1() {
-    this.allCitizens = this.allCitizens.filter((citizen) => {
-      if (citizen.pos.y > (this.canvasSize.height / 5) * 2) {
+      } else if (this.colisionEnemiesCiticens()) {
         return true;
       } else {
         this.saveCitizens++;
         this.scoreBoard.increaseScorePlayer(this.saveCitizens);
+        if (this.saveCitizens > 30) {
+          this.waveGenerator += 5;
+        }
+      }
+    });
+  },
+
+  clearPotions() {
+    this.allPotions = this.allCitizens.filter((potions) => {
+      if (this.colisionPlayerPotion1()) {
+        return true;
+      } else if (this.colisionPlayerPotion2()) {
+        return true;
+      } else if (this.colisionPlayerPotion3()) {
+        return true;
       }
     });
   },
@@ -355,5 +488,9 @@ const gameStart = {
       //   this.player.shoot();
       // }
     };
+  },
+
+  gameOver() {
+    clearInterval(this.intervalId);
   },
 };
