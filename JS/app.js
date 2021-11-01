@@ -12,12 +12,14 @@ const gameStart = {
   sky: undefined,
   goal: undefined,
   player: undefined,
+  potion1: undefined,
   saveCitizens: 0,
   eliminatedCitizens: 0,
   intervalId: 0,
   framesCount: 0,
   scoreBoard: undefined,
   allCitizens: [],
+  allPotions: [],
   allEnemies: [],
   keys: {
     player: {
@@ -25,6 +27,7 @@ const gameStart = {
       ARROW_UP: "ArrowUp",
       ARROW_LEFT: "ArrowLeft",
       ARROW_RIGHT: "ArrowRight",
+      // SPACE: " ",
     },
   },
 
@@ -32,7 +35,6 @@ const gameStart = {
     this.setContext();
     this.setDimensions();
     this.createAll();
-    //this.createPlayer();
     this.setListeners();
     this.start();
   },
@@ -50,6 +52,8 @@ const gameStart = {
   },
 
   start() {
+    this.randomPotions = Math.floor(Math.random() * 10);
+
     this.intervalId = setInterval(() => {
       this.framesCount++;
 
@@ -57,18 +61,22 @@ const gameStart = {
         this.framesCount = 0;
       }
 
-      if (this.framesCount % 240 === 0) {
+      if (this.framesCount % 40 === 0) {
         this.createCitizens();
       }
 
-      if (this.framesCount % 120 === 0) {
+      if (this.framesCount % 200 === 0) {
         this.createEnemies();
+      }
+      if (this.framesCount % (60 * this.randomPotions) === 0) {
+        this.createPotion1();
       }
 
       this.clearScreen();
+      this.createPlayer();
       this.drawAll();
       this.moveAll();
-      this.colisionCitizens();
+      //this.isCollisionCitizens();
       this.clearAll();
     }, 1000 / this.frames);
   },
@@ -80,18 +88,20 @@ const gameStart = {
   },
 
   drawAll() {
-    //this.drawPlayer();
     this.createPlayBoard();
     this.drawBackgroundSky();
     this.drawBackground();
+    this.drawPlayer();
     this.drawCitizens();
     this.drawEnemies();
+    this.drawPotion1();
     this.drawScoreBoard();
   },
 
   moveAll() {
     this.moveCitizens();
     this.moveEnemies();
+    //this.movePotion1();
   },
 
   clearAll() {
@@ -105,6 +115,12 @@ const gameStart = {
 
   drawEnemies() {
     this.allEnemies.forEach((enemy) => {
+      enemy.draw();
+    });
+  },
+
+  drawPotion1() {
+    this.allPotions.forEach((enemy) => {
       enemy.draw();
     });
   },
@@ -127,18 +143,16 @@ const gameStart = {
     this.scoreBoard.draw(this.saveCitizens, this.eliminatedCitizens);
   },
 
+  movePotion1() {
+    this.potion1.move();
+  },
+
   moveEnemies() {
     this.allEnemies.forEach((enemy) => enemy.move());
   },
 
   moveCitizens() {
     this.allCitizens.forEach((citizen) => citizen.move());
-  },
-
-  colisionCitizens() {
-    this.allCitizens.forEach((citizen) =>
-      citizen.colision(this.goal, this.saveCitizens)
-    );
   },
 
   clearScreen() {
@@ -172,8 +186,35 @@ const gameStart = {
     );
   },
 
+  createPotion1() {
+    this.randomRoad = Math.floor(Math.random() * this.randomNumber);
+
+    this.randomNumber = Math.floor(Math.random() * 4);
+
+    this.minimunRoadY = this.canvasSize.height / 5;
+
+    this.minimunRoadX = (this.canvasSize.height / 5) * 2 + 50;
+
+    this.positionYEnemies =
+      this.minimunRoad + (this.canvasSize.height / 4) * this.randomRoad;
+
+    this.positionXEnemies =
+      this.minimunRoadX + (this.canvasSize.width / 5) * this.randomRoad;
+
+    this.allPotions.push(
+      new Potions(
+        this.ctx,
+        this.positionXEnemies,
+        this.positionYEnemies,
+        50,
+        50,
+        "PocionAmarilla.png"
+      )
+    );
+  },
+
   createPlayer() {
-    this.player = new Player(0, 0, 100, 100, 20);
+    this.player = new Player(this.ctx, 1000, 1000, 100, 100, 30);
     //Definir posteriormente velocidad del jugador para los potenciadores
   },
 
@@ -198,7 +239,7 @@ const gameStart = {
 
   createEnemies() {
     this.randomRoad = Math.floor(Math.random() * 4);
-    console.log(this.randomRoad);
+
     this.minimunRoad = this.canvasSize.height / 5;
 
     this.positionYEnemies =
@@ -218,8 +259,11 @@ const gameStart = {
 
   clearEnemies() {
     this.allEnemies = this.allEnemies.filter((enemy) => {
-      if (enemy.pos.x > this.canvasSize.width / 2) {
+      if (enemy.pos.x > this.canvasSize.width / 5) {
         return true;
+      } else {
+        this.eliminatedCitizens++;
+        this.scoreBoard.increaseScoreEnemies(this.eliminatedCitizens);
       }
     });
   },
@@ -228,6 +272,9 @@ const gameStart = {
     this.allCitizens = this.allCitizens.filter((citizen) => {
       if (citizen.pos.y > (this.canvasSize.height / 5) * 2) {
         return true;
+      } else {
+        this.saveCitizens++;
+        this.scoreBoard.increaseScorePlayer(this.saveCitizens);
       }
     });
   },
@@ -243,17 +290,20 @@ const gameStart = {
   setListeners() {
     document.onkeydown = (e) => {
       if (e.key === this.keys.player.ARROW_DOWN) {
-        this.player.PlusMoveY();
+        this.player.plusMoveY();
       }
       if (e.key === this.keys.player.ARROW_UP) {
-        this.player.MinusMoveY();
+        this.player.minusMoveY();
       }
       if (e.key === this.keys.player.ARROW_LEFT) {
-        this.player.MinusMoveX();
+        this.player.minusMoveX();
       }
       if (e.key === this.keys.player.ARROW_RIGHT) {
-        this.player.PlusMoveX();
+        this.player.plusMoveX();
       }
+      // if (e.key === this.keys.player.SPACE) {
+      //   this.player.shoot();
+      // }
     };
   },
 };

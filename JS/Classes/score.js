@@ -24,17 +24,13 @@ class Score {
       this.pos.x,
       this.pos.y + 50
     );
-    // this.increaseScorePlayer(saveCitizens);
-    // this.increaseScoreEnemies(eliminatedCitizens);
+    this.increaseScorePlayer(saveCitizens);
+    this.increaseScoreEnemies(eliminatedCitizens);
   }
-  // increaseScorePlayer(saveCitizens) {
-  //   if (saveCitizens % 40 === 0) {
-  //     this.scorePlayer++;
-  //   }
-  // }
-  // increaseScoreEnemies(eliminatedCitizens) {
-  //   if (eliminatedCitizens % 40 === 0) {
-  //     this.scoreEnemies++;
-  //   }
-  // }
+  increaseScorePlayer(saveCitizens) {
+    this.scorePlayer = saveCitizens;
+  }
+  increaseScoreEnemies(eliminatedCitizens) {
+    this.scoreEnemies = eliminatedCitizens;
+  }
 }

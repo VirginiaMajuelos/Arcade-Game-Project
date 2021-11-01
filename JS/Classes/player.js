@@ -11,23 +11,24 @@ class Player {
       height: height,
     };
 
-    this.speed = {
-      y: speed,
+    this.speed = speed;
+
+    this.canvasSize = {
+      width: window.innerWidth,
+      height: window.innerHeight,
     };
+
     // this.image = undefined;
     // this.arrayCaracteres = {};
-    this.draw(); //cambiar a init cuando sea imagen
+    this.init(); //cambiar a init cuando sea imagen
+  }
+
+  init() {
+    this.draw();
   }
 
   draw() {
-    // this.ctx.drawImage(
-    //   this.image,
-    //   this.posX,
-    //   this.posY,
-    //   this.width,
-    //   this.height
-    // );
-    this.ctx.fillStyle = "purple";
+    this.ctx.fillStyle = "white";
     this.ctx.fillRect(
       this.pos.x,
       this.pos.y,
@@ -35,23 +36,27 @@ class Player {
       this.size.height
     );
   }
-  MinusMoveY() {
+
+  minusMoveY() {
     if (this.pos.y > this.canvasSize.height / 5) {
       this.pos.y -= this.speed;
     }
   }
-  MinusMoveX() {
-    if (this.pos.x < 0) {
+
+  minusMoveX() {
+    if (this.pos.x > 0) {
       this.pos.x -= this.speed;
     }
   }
-  PlusMoveY() {
+
+  plusMoveY() {
     if (this.pos.y < this.canvasSize.height - this.height) {
       this.pos.y += this.speed;
     }
   }
-  PlusMoveX() {
-    if (this.pos.x < this.canvasSize.width - this.width) {
+
+  plusMoveX() {
+    if (this.pos.x < this.canvasSize.width - this.size.width) {
       this.pos.x += this.speed;
     }
   }

@@ -14,6 +14,11 @@ class Citizen {
     this.speed = {
       y: speedY,
     };
+
+    this.canvasSize = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
     // this.image = undefined;
     // this.arrayCaracteres = {};
     this.draw(); //cambiar a init cuando sea imagen
@@ -43,17 +48,5 @@ class Citizen {
 
   move() {
     this.pos.y -= this.speed.y;
-  }
-
-  colision(goal, saveCitizens) {
-    if (
-      this.pos.y < goal.posY + goal.height &&
-      this.size.height + this.pos.y - 100 > goal.posY
-    ) {
-      saveCitizens++;
-      //console.log("colision");
-    } else {
-      //console.log("no colision");
-    }
   }
 }
