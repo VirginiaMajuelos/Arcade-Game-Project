@@ -36,7 +36,6 @@ class Player {
       this.size.height
     );
   }
-
   minusMoveY() {
     if (this.pos.y > this.canvasSize.height / 5) {
       this.pos.y -= this.speed;
@@ -50,7 +49,7 @@ class Player {
   }
 
   plusMoveY() {
-    if (this.pos.y < this.canvasSize.height - this.height) {
+    if (this.pos.y < this.canvasSize.height - this.size.height) {
       this.pos.y += this.speed;
     }
   }

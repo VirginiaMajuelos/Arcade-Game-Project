@@ -22,13 +22,11 @@ const gameStart = {
   allPotions: [],
   allEnemies: [],
   keys: {
-    player: {
-      ARROW_DOWN: "ArrowDown",
-      ARROW_UP: "ArrowUp",
-      ARROW_LEFT: "ArrowLeft",
-      ARROW_RIGHT: "ArrowRight",
-      // SPACE: " ",
-    },
+    ARROW_DOWN: "ArrowDown",
+    ARROW_UP: "ArrowUp",
+    ARROW_LEFT: "ArrowLeft",
+    ARROW_RIGHT: "ArrowRight",
+    // SPACE: " ",
   },
 
   init() {
@@ -36,6 +34,7 @@ const gameStart = {
     this.setDimensions();
     this.createAll();
     this.setListeners();
+
     this.start();
   },
 
@@ -52,7 +51,7 @@ const gameStart = {
   },
 
   start() {
-    this.randomPotions = Math.floor(Math.random() * 10);
+    this.randomPotions1 = Math.floor(Math.random() * 10);
 
     this.intervalId = setInterval(() => {
       this.framesCount++;
@@ -65,18 +64,18 @@ const gameStart = {
         this.createCitizens();
       }
 
-      if (this.framesCount % 200 === 0) {
+      if (this.framesCount % 20 === 0) {
         this.createEnemies();
       }
-      if (this.framesCount % (60 * this.randomPotions) === 0) {
+      if (this.framesCount % (60 * this.randomPotions1) === 0) {
         this.createPotion1();
       }
 
       this.clearScreen();
-      this.createPlayer();
-      this.drawAll();
+      this.colisionPlayerEnemy();
       this.moveAll();
-      //this.isCollisionCitizens();
+      this.drawAll();
+
       this.clearAll();
     }, 1000 / this.frames);
   },
@@ -85,6 +84,7 @@ const gameStart = {
     this.createBackgroundSky();
     this.createBackgroundShip();
     this.createScoreBoard();
+    this.createPlayer();
   },
 
   drawAll() {
@@ -187,25 +187,23 @@ const gameStart = {
   },
 
   createPotion1() {
-    this.randomRoad = Math.floor(Math.random() * this.randomNumber);
+    this.randomNumberX = this.canvasSize.width * Math.random();
 
-    this.randomNumber = Math.floor(Math.random() * 4);
+    this.randomNumberY = this.canvasSize.height * Math.random();
 
     this.minimunRoadY = this.canvasSize.height / 5;
 
-    this.minimunRoadX = (this.canvasSize.height / 5) * 2 + 50;
+    this.minimunRoadX = (this.canvasSize.width / 5) * 2 + 50;
 
-    this.positionYEnemies =
-      this.minimunRoad + (this.canvasSize.height / 4) * this.randomRoad;
+    this.positionYPotions = this.minimunRoadY + this.randomNumberY;
 
-    this.positionXEnemies =
-      this.minimunRoadX + (this.canvasSize.width / 5) * this.randomRoad;
+    this.positionXPotions = this.minimunRoadX + this.randomNumberX;
 
     this.allPotions.push(
       new Potions(
         this.ctx,
-        this.positionXEnemies,
-        this.positionYEnemies,
+        this.positionXPotions,
+        this.positionYPotions,
         50,
         50,
         "PocionAmarilla.png"
@@ -214,7 +212,14 @@ const gameStart = {
   },
 
   createPlayer() {
-    this.player = new Player(this.ctx, 1000, 1000, 100, 100, 30);
+    this.player = new Player(
+      this.ctx,
+      this.canvasSize.width / 2,
+      this.canvasSize.height / 2,
+      100,
+      100,
+      30
+    );
     //Definir posteriormente velocidad del jugador para los potenciadores
   },
 
@@ -240,7 +245,7 @@ const gameStart = {
   createEnemies() {
     this.randomRoad = Math.floor(Math.random() * 4);
 
-    this.minimunRoad = this.canvasSize.height / 5;
+    this.minimunRoad = (this.canvasSize.height / 5) * 2;
 
     this.positionYEnemies =
       this.minimunRoad + (this.canvasSize.height / 4) * this.randomRoad;
@@ -257,9 +262,43 @@ const gameStart = {
     );
   },
 
+  colisionPlayerEnemy() {
+    this.allEnemies.map((enemy, i) => {
+      if (
+        this.player.pos.x < enemy.pos.x + enemy.size.width &&
+        this.player.pos.x + this.player.size.width > enemy.pos.x &&
+        this.player.pos.y < enemy.pos.y + enemy.size.height &&
+        this.player.size.height + this.player.pos.y > enemy.pos.y
+      ) {
+        this.allEnemies.splice(i, 1);
+      } else {
+        return false;
+      }
+    });
+  },
+  colisionPlayerPotion1() {
+    this.allPotions.map((potion, i) => {
+      if (
+        this.player.pos.x < potion.pos.x + potion.size.width &&
+        this.player.pos.x + this.player.size.width > potion.pos.x &&
+        this.player.pos.y < potion.pos.y + potion.size.height &&
+        this.player.size.height + this.player.pos.y > potion.pos.y
+      ) {
+        this.allPotions.splice(i, 1);
+        this.player.speed *= 2;
+      } else {
+        return false;
+      }
+    });
+  },
+
   clearEnemies() {
     this.allEnemies = this.allEnemies.filter((enemy) => {
-      if (enemy.pos.x > this.canvasSize.width / 5) {
+      console.log(this.colisionPlayerEnemy());
+      if (
+        enemy.pos.x > this.canvasSize.width / 5 ||
+        this.colisionPlayerEnemy()
+      ) {
         return true;
       } else {
         this.eliminatedCitizens++;
@@ -269,6 +308,17 @@ const gameStart = {
   },
 
   clearCitizens() {
+    this.allCitizens = this.allCitizens.filter((citizen) => {
+      if (citizen.pos.y > (this.canvasSize.height / 5) * 2) {
+        return true;
+      } else {
+        this.saveCitizens++;
+        this.scoreBoard.increaseScorePlayer(this.saveCitizens);
+      }
+    });
+  },
+
+  clearPotion1() {
     this.allCitizens = this.allCitizens.filter((citizen) => {
       if (citizen.pos.y > (this.canvasSize.height / 5) * 2) {
         return true;
@@ -289,16 +339,16 @@ const gameStart = {
 
   setListeners() {
     document.onkeydown = (e) => {
-      if (e.key === this.keys.player.ARROW_DOWN) {
+      if (e.key === this.keys.ARROW_DOWN) {
         this.player.plusMoveY();
       }
-      if (e.key === this.keys.player.ARROW_UP) {
+      if (e.key === this.keys.ARROW_UP) {
         this.player.minusMoveY();
       }
-      if (e.key === this.keys.player.ARROW_LEFT) {
+      if (e.key === this.keys.ARROW_LEFT) {
         this.player.minusMoveX();
       }
-      if (e.key === this.keys.player.ARROW_RIGHT) {
+      if (e.key === this.keys.ARROW_RIGHT) {
         this.player.plusMoveX();
       }
       // if (e.key === this.keys.player.SPACE) {
