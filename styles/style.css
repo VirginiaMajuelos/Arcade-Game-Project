@@ -3,4 +3,24 @@
   padding: 0;
   box-sizing: border-box;
   overflow: hidden;
+  font-family: "Bangers", cursive;
+}
+.hidden {
+  display: none;
+}
+.display {
+  display: block;
+}
+.body-color {
+  background-color: black;
+}
+.img {
+  margin: 10px auto;
+  display: block;
+  width: 60%;
+}
+#score-msg {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 72px;
+  color: white;
 }

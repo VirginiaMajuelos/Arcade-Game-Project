@@ -11,6 +11,7 @@ const gameStart = {
   frames: 60,
   sky: undefined,
   goal: undefined,
+  round: undefined,
   player: undefined,
   potion1: undefined,
   saveCitizens: 0,
@@ -18,10 +19,38 @@ const gameStart = {
   eliminatedCitizens: 0,
   intervalId: 0,
   framesCount: 0,
+  speedCounter: 0,
+  speedCounter2: 0,
   scoreBoard: undefined,
   allCitizens: [],
   allPotions: [],
   allEnemies: [],
+  photoCitizens: [
+    "Aladdin.png",
+    "Jasmine.png",
+    "Roshan.png",
+    "Elena.png",
+    "Agentcoulson.png",
+    "Greebo.png",
+    "Janefoster.png",
+    "Peggycarter.png",
+    "Skye.png",
+    "Barret.png",
+  ],
+  photoEnemies: [
+    "Redskull.png",
+    "Loki.png",
+    "Malekith.png",
+    "Mandarin.png",
+    "Wintersoldier.png",
+  ],
+  photoFrames: [
+    "Level1.png",
+    "Level2.png",
+    "Level3.png",
+    "Level4.png",
+    "Level5.png",
+  ],
   keys: {
     ARROW_DOWN: "ArrowDown",
     ARROW_UP: "ArrowUp",
@@ -55,7 +84,7 @@ const gameStart = {
     this.intervalId = setInterval(() => {
       this.framesCount++;
 
-      if (this.framesCount > 2000) {
+      if (this.framesCount > 4000) {
         this.framesCount = 0;
       }
 
@@ -63,27 +92,31 @@ const gameStart = {
         this.createCitizens();
       }
       if (this.framesCount % (60 - this.waveGenerator) === 0) {
-        console.log(this.waveGenerator);
         this.createEnemy1();
       }
-      if (this.saveCitizens >= 90) {
+      if (this.saveCitizens >= 30) {
         if (this.framesCount % 60 === 0) {
           this.createEnemy2();
         }
       }
-
-      if (this.framesCount % 900 === 0) {
-        this.createPotion1();
+      if (this.player.speed < 48.3) {
+        if (this.framesCount % 2700 === 0) {
+          this.createPotion1();
+        }
+      }
+      if (this.speedCounter < 4) {
+        if (this.framesCount % 3400 === 0) {
+          this.speedCounter++;
+          this.createPotion2();
+        }
       }
 
-      if (this.framesCount % 900 === 0) {
-        this.createPotion2();
+      if (this.speedCounter2 < 3 && this.player.speed < 48.3) {
+        if (this.framesCount % 3800 === 0) {
+          this.speedCounter2++;
+          this.createPotion3();
+        }
       }
-
-      if (this.framesCount % 1800 === 0) {
-        this.createPotion3();
-      }
-
       this.clearScreen();
       this.colisionPlayerEnemy();
       this.colisionPlayerPotion1();
@@ -98,6 +131,7 @@ const gameStart = {
 
   createAll() {
     this.createBackgroundSky();
+    this.createTextFrames();
     this.createScoreBoard();
     this.createPlayer();
   },
@@ -110,6 +144,7 @@ const gameStart = {
     this.drawPotion1();
     this.drawPotion2();
     this.drawPotion3();
+    this.drawTextFrame();
     this.drawScoreBoard();
   },
 
@@ -130,7 +165,7 @@ const gameStart = {
 
   drawEnemies() {
     this.allEnemies.forEach((enemy) => {
-      enemy.draw();
+      enemy.drawSprite(this.framesCount);
     });
   },
 
@@ -154,12 +189,28 @@ const gameStart = {
 
   drawCitizens() {
     this.allCitizens.forEach((citizen) => {
-      citizen.draw();
+      citizen.drawSprite(this.framesCount);
     });
   },
 
   drawBackgroundSky() {
     this.sky.draw();
+  },
+
+  drawTextFrame() {
+    if (this.framesCount < 100 && this.saveCitizens === 0) {
+      this.startFrame.draw();
+    } else if (this.saveCitizens === 10) {
+      this.round2.draw();
+    } else if (this.saveCitizens === 20) {
+      this.round3.draw();
+    } else if (this.saveCitizens === 30) {
+      this.round4.draw();
+    } else if (this.saveCitizens === 40) {
+      this.round5.draw();
+    } else if (this.saveCitizens === 50) {
+      this.win.draw();
+    }
   },
 
   drawScoreBoard() {
@@ -192,15 +243,16 @@ const gameStart = {
   createPotion1() {
     this.randomNumberX = this.canvasSize.width * Math.random();
 
-    this.randomNumberY = this.canvasSize.height * Math.random();
+    this.randomNumberY = Math.floor(Math.random() * 3);
 
-    this.minimunRoadY = (this.canvasSize.height / 5) * 2;
+    this.minimunRoadY = (this.canvasSize.height / 10) * 3.5;
 
     this.minimunRoadX = (this.canvasSize.width / 10) * 2;
 
-    this.positionYPotions = this.minimunRoadY + this.randomNumberY;
-
     this.positionXPotions = this.minimunRoadX + this.randomNumberX;
+
+    this.positionYPotions =
+      this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
 
     this.allPotions.push(
       new Potions(
@@ -217,15 +269,16 @@ const gameStart = {
   createPotion2() {
     this.randomNumberX = this.canvasSize.width * Math.random();
 
-    this.randomNumberY = this.canvasSize.height * Math.random();
+    this.randomNumberY = Math.floor(Math.random() * 3);
 
-    this.minimunRoadY = (this.canvasSize.height / 5) * 2;
+    this.minimunRoadY = (this.canvasSize.height / 10) * 3.5;
 
     this.minimunRoadX = (this.canvasSize.width / 10) * 2;
 
-    this.positionYPotions = this.minimunRoadY + this.randomNumberY;
-
     this.positionXPotions = this.minimunRoadX + this.randomNumberX;
+
+    this.positionYPotions =
+      this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
 
     this.allPotions.push(
       new Potions(
@@ -242,17 +295,18 @@ const gameStart = {
   createPotion3() {
     this.randomNumberX = this.canvasSize.width * Math.random();
 
-    this.randomNumberY = this.canvasSize.height * Math.random();
+    this.randomNumberY = Math.floor(Math.random() * 3);
 
-    this.minimunRoadY = (this.canvasSize.height / 5) * 2;
+    this.minimunRoadY = (this.canvasSize.height / 10) * 3.5;
 
     this.minimunRoadX = (this.canvasSize.width / 10) * 2;
 
-    this.positionYPotions = this.minimunRoadY + this.randomNumberY;
-
     this.positionXPotions = this.minimunRoadX + this.randomNumberX;
 
-    this.allPotions.push(
+    this.positionYPotions =
+      this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
+
+    this.positionYEnemies = this.allPotions.push(
       new Potions(
         this.ctx,
         this.positionXPotions,
@@ -272,36 +326,45 @@ const gameStart = {
       101,
       140,
       30,
-      "Hulk.png",
-      0,
-      0
+      "Hulk.png"
     );
     //Definir posteriormente velocidad del jugador para los potenciadores
   },
 
   createCitizens() {
+    this.randomCitizen = Math.floor(Math.random() * this.photoCitizens.length);
+
+    this.nameCitizen = this.photoCitizens[this.randomCitizen];
+
     this.randomDisplayCitizen = Math.floor(
       (Math.random() * this.canvasSize.width) / 10
     );
+
     this.speedYCitizens = Math.floor(Math.random() * 3);
     this.positionXCitizen =
       this.canvasSize.width / 20 + this.randomDisplayCitizen;
+
     this.allCitizens.push(
       new Citizen(
         this.ctx,
         this.positionXCitizen,
         this.canvasSize.height,
-        101,
-        140,
-        this.speedYCitizens
+        80,
+        120,
+        this.speedYCitizens,
+        this.nameCitizen
       )
     ); //Afinar tamaño de los ciudadanos
   },
 
   createEnemy1() {
-    this.randomRoad = Math.floor(Math.random() * 4);
+    this.randomEnemies = Math.floor(Math.random() * this.photoEnemies.length);
 
-    this.minimunRoad = (this.canvasSize.height / 5) * 2;
+    this.nameEnemy = this.photoEnemies[this.randomEnemies];
+
+    this.randomRoad = Math.floor(Math.random() * 3);
+
+    this.minimunRoad = (this.canvasSize.height / 10) * 3;
 
     this.positionYEnemies =
       this.minimunRoad + (this.canvasSize.height / 4) * this.randomRoad;
@@ -311,26 +374,31 @@ const gameStart = {
         this.ctx,
         this.canvasSize.width - 40,
         this.positionYEnemies,
-        101,
-        140,
-        5
+        80,
+        120,
+        4,
+        this.nameEnemy
       )
     );
   },
 
   createEnemy2() {
     this.randomRoad = Math.floor(Math.random() * 4);
-    this.minimunRoad = (this.canvasSize.height / 5) * 2;
+
+    this.minimunRoad = (this.canvasSize.height / 10) * 3;
+
     this.positionYEnemies =
       this.minimunRoad + (this.canvasSize.height / 4) * this.randomRoad;
+
     this.allEnemies.push(
       new Enemy(
         this.ctx,
         this.canvasSize.width - 40,
         this.positionYEnemies,
-        101,
+        85,
         140,
-        10
+        6.5,
+        "Ronan.png"
       )
     );
   },
@@ -352,6 +420,7 @@ const gameStart = {
 
   colisionPlayerPotion1() {
     this.allPotions.map((potion1, i) => {
+      console.log("potion1");
       if (
         this.player.pos.x < potion1.pos.x + potion1.size.width &&
         this.player.pos.x + this.player.size.width > potion1.pos.x &&
@@ -392,6 +461,7 @@ const gameStart = {
       ) {
         this.allPotions.splice(i, 1);
         this.randomChance = Math.floor(Math.random() * 100);
+        console.log(this.randomChance);
         if (this.randomChance < 49) {
           this.player.speed *= 1.1;
         } else if (49 <= this.randomChance < 98) {
@@ -436,15 +506,15 @@ const gameStart = {
 
   clearCitizens() {
     this.allCitizens = this.allCitizens.filter((citizen) => {
-      if (citizen.pos.y > (this.canvasSize.height / 5) * 2) {
+      if (citizen.pos.y > (this.canvasSize.height / 10) * 2.5) {
         return true;
       } else if (this.colisionEnemiesCiticens()) {
         return true;
       } else {
         this.saveCitizens++;
         this.scoreBoard.increaseScorePlayer(this.saveCitizens);
-        if (this.saveCitizens > 30) {
-          this.waveGenerator += 5;
+        if (this.saveCitizens % 10 === 0) {
+          this.waveGenerator += 3;
         }
       }
     });
@@ -470,6 +540,80 @@ const gameStart = {
     );
   },
 
+  createTextFrames() {
+    this.createStart();
+    this.createRound2();
+    this.createRound3();
+    this.createRound4();
+    this.createRound5();
+    this.createWin();
+  },
+
+  createStart() {
+    this.startFrame = new Background(
+      this.ctx,
+      this.canvasSize.width / 2 - 200,
+      this.canvasSize.height / 2 - 100,
+      400,
+      200,
+      "Start.png"
+    );
+  },
+
+  createRound2() {
+    this.round2 = new Background(
+      this.ctx,
+      this.canvasSize.width / 2 - 200,
+      this.canvasSize.height / 2 - 100,
+      400,
+      200,
+      "Level2.png"
+    );
+  },
+
+  createRound3() {
+    this.round3 = new Background(
+      this.ctx,
+      this.canvasSize.width / 2 - 200,
+      this.canvasSize.height / 2 - 100,
+      400,
+      200
+    );
+  },
+
+  createRound4() {
+    this.round4 = new Background(
+      this.ctx,
+      this.canvasSize.width / 2 - 200,
+      this.canvasSize.height / 2 - 100,
+      400,
+      200,
+      "Level4.png"
+    );
+  },
+
+  createRound5() {
+    this.round5 = new Background(
+      this.ctx,
+      this.canvasSize.width / 2 - 200,
+      this.canvasSize.height / 2 - 100,
+      400,
+      200,
+      "Level5.png"
+    );
+  },
+
+  createWin() {
+    this.win = new Background(
+      this.ctx,
+      this.canvasSize.width / 2 - 300,
+      this.canvasSize.height / 2 - 150,
+      600,
+      300,
+      "Win.png"
+    );
+  },
+
   setListeners() {
     document.onkeydown = (e) => {
       if (e.key === this.keys.ARROW_DOWN) {
@@ -484,6 +628,23 @@ const gameStart = {
       if (e.key === this.keys.ARROW_RIGHT) {
         this.player.plusMoveX();
       }
+
+      // if (e.key === this.key[40]) {
+      //   this.player.plusMoveY();
+      //   console.log(e.key);
+      // }
+      // if (e.key === this.key[38]) {
+      //   console.log("asd1");
+      //   this.player.minusMoveY();
+      // }
+      // if (e.key === this.key[37]) {
+      //   console.log("asd2");
+      //   this.player.minusMoveX();
+      // }
+      // if (e.key === this.key[39]) {
+      //   console.log("asd3");
+      //   this.player.plusMoveX();
+      // }
       // if (e.key === this.keys.player.SPACE) {
       //   this.player.shoot();
       // }

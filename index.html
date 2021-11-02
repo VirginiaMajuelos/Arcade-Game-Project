@@ -6,11 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="game-board">
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas" class="display"></canvas>
     </div>
+    <section id="win" class="hidden"></section>
     <script src="./JS/Classes/player.js"></script>
     <script src="./JS/Classes/score.js"></script>
     <script src="./JS/Classes/enemies.js"></script>
