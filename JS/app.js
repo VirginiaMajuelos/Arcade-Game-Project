@@ -1,3 +1,6 @@
+const replay = document.getElementById("replay");
+const startButton = document.getElementById("start-button2");
+
 const gameStart = {
   name: "",
   description: "",
@@ -17,6 +20,7 @@ const gameStart = {
   saveCitizens: 0,
   waveGenerator: 0,
   eliminatedCitizens: 0,
+  levelUp: 0,
   intervalId: 0,
   framesCount: 0,
   speedCounter: 0,
@@ -25,6 +29,7 @@ const gameStart = {
   allCitizens: [],
   allPotions: [],
   allEnemies: [],
+  allPhotoFrames: [],
   photoCitizens: [
     "Aladdin.png",
     "Jasmine.png",
@@ -45,11 +50,14 @@ const gameStart = {
     "Wintersoldier.png",
   ],
   photoFrames: [
+    "Start.png",
     "Level1.png",
     "Level2.png",
     "Level3.png",
     "Level4.png",
     "Level5.png",
+    "Win.png",
+    "GameOver.png",
   ],
   keys: {
     ARROW_DOWN: "ArrowDown",
@@ -64,7 +72,6 @@ const gameStart = {
     this.setDimensions();
     this.createAll();
     this.setListeners();
-
     this.start();
   },
 
@@ -88,10 +95,10 @@ const gameStart = {
         this.framesCount = 0;
       }
 
-      if (this.framesCount % 120 === 0) {
+      if (this.framesCount % 20 === 0) {
         this.createCitizens();
       }
-      if (this.framesCount % (60 - this.waveGenerator) === 0) {
+      if (this.framesCount % (20 - this.waveGenerator) === 0) {
         this.createEnemy1();
       }
       if (this.saveCitizens >= 30) {
@@ -131,9 +138,9 @@ const gameStart = {
 
   createAll() {
     this.createBackgroundSky();
-    this.createTextFrames();
     this.createScoreBoard();
     this.createPlayer();
+    this.createStart();
   },
 
   drawAll() {
@@ -199,17 +206,19 @@ const gameStart = {
 
   drawTextFrame() {
     if (this.framesCount < 100 && this.saveCitizens === 0) {
-      this.startFrame.draw();
+      this.allPhotoFrames[0].draw();
     } else if (this.saveCitizens === 10) {
-      this.round2.draw();
+      this.allPhotoFrames[1].draw();
     } else if (this.saveCitizens === 20) {
-      this.round3.draw();
+      this.allPhotoFrames[2].draw();
     } else if (this.saveCitizens === 30) {
-      this.round4.draw();
+      this.allPhotoFrames[3].draw();
     } else if (this.saveCitizens === 40) {
-      this.round5.draw();
+      this.allPhotoFrames[4].draw();
     } else if (this.saveCitizens === 50) {
-      this.win.draw();
+      this.allPhotoFrames[5].draw();
+    } else if (this.saveCitizens === 60) {
+      this.allPhotoFrames[6].draw();
     }
   },
 
@@ -461,7 +470,6 @@ const gameStart = {
       ) {
         this.allPotions.splice(i, 1);
         this.randomChance = Math.floor(Math.random() * 100);
-        console.log(this.randomChance);
         if (this.randomChance < 49) {
           this.player.speed *= 1.1;
         } else if (49 <= this.randomChance < 98) {
@@ -489,7 +497,10 @@ const gameStart = {
           this.eliminatedCitizens++;
           this.scoreBoard.increaseScoreEnemies(this.eliminatedCitizens);
           if (this.eliminatedCitizens === 10) {
+            this.allPhotoFrames[7].draw();
             this.gameOver();
+            window.setTimeout(this.reloadANewGame, 2500);
+            this.resetValues();
           }
         } else {
           return false;
@@ -540,78 +551,19 @@ const gameStart = {
     );
   },
 
-  createTextFrames() {
-    this.createStart();
-    this.createRound2();
-    this.createRound3();
-    this.createRound4();
-    this.createRound5();
-    this.createWin();
-  },
-
   createStart() {
-    this.startFrame = new Background(
-      this.ctx,
-      this.canvasSize.width / 2 - 200,
-      this.canvasSize.height / 2 - 100,
-      400,
-      200,
-      "Start.png"
-    );
-  },
-
-  createRound2() {
-    this.round2 = new Background(
-      this.ctx,
-      this.canvasSize.width / 2 - 200,
-      this.canvasSize.height / 2 - 100,
-      400,
-      200,
-      "Level2.png"
-    );
-  },
-
-  createRound3() {
-    this.round3 = new Background(
-      this.ctx,
-      this.canvasSize.width / 2 - 200,
-      this.canvasSize.height / 2 - 100,
-      400,
-      200
-    );
-  },
-
-  createRound4() {
-    this.round4 = new Background(
-      this.ctx,
-      this.canvasSize.width / 2 - 200,
-      this.canvasSize.height / 2 - 100,
-      400,
-      200,
-      "Level4.png"
-    );
-  },
-
-  createRound5() {
-    this.round5 = new Background(
-      this.ctx,
-      this.canvasSize.width / 2 - 200,
-      this.canvasSize.height / 2 - 100,
-      400,
-      200,
-      "Level5.png"
-    );
-  },
-
-  createWin() {
-    this.win = new Background(
-      this.ctx,
-      this.canvasSize.width / 2 - 300,
-      this.canvasSize.height / 2 - 150,
-      600,
-      300,
-      "Win.png"
-    );
+    this.photoFrames.forEach((el) => {
+      this.allPhotoFrames.push(
+        new Background(
+          this.ctx,
+          this.canvasSize.width / 2 - 300,
+          this.canvasSize.height / 2 - 150,
+          600,
+          300,
+          el
+        )
+      );
+    });
   },
 
   setListeners() {
@@ -649,9 +601,48 @@ const gameStart = {
       //   this.player.shoot();
       // }
     };
+    document.onkeydown = (el) => {};
   },
 
   gameOver() {
     clearInterval(this.intervalId);
+  },
+
+  reloadANewGame() {
+    replay.classList.remove("hidden");
+    replay.classList.add("display");
+    play.classList.remove("display");
+    play.classList.add("hidden");
+    document.getElementById("start-button2").addEventListener("click", () => {
+      replay.classList.remove("display");
+      replay.classList.add("hidden");
+      inicialMenu.classList.remove("hidden");
+      inicialMenu.classList.add("replay");
+    });
+  },
+
+  resetValues() {
+    (this.ctx = undefined),
+      (this.canvasDOM = undefined),
+      (this.canvasSize = { width: undefined, height: undefined }),
+      (this.frames = 60),
+      (this.sky = undefined),
+      (this.goal = undefined),
+      (this.round = undefined),
+      (this.player = undefined),
+      (this.potion1 = undefined),
+      (this.saveCitizens = 0),
+      (this.waveGenerator = 0),
+      (this.eliminatedCitizens = 0),
+      (this.levelUp = 0),
+      (this.intervalId = 0),
+      (this.framesCount = 0),
+      (this.speedCounter = 0),
+      (this.speedCounter2 = 0),
+      (this.scoreBoard = undefined),
+      (this.allCitizens = []),
+      (this.allPotions = []),
+      (this.allEnemies = []),
+      (this.allPhotoFrames = []);
   },
 };

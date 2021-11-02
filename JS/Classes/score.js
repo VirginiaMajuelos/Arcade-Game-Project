@@ -12,13 +12,13 @@ class Score {
   draw(saveCitizens, eliminatedCitizens) {
     this.ctx.fillStyle = "white";
     this.ctx.fillText("Score", this.pos.x, this.pos.y);
-    this.ctx.font = "24px serif";
+    this.ctx.font = "24px Bangers";
     this.ctx.fillText(
       this.scorePlayer + " citizens saved.",
       this.pos.x,
       this.pos.y + 25
     );
-    this.ctx.font = "24px serif";
+    this.ctx.font = "24px Bangers";
     this.ctx.fillText(
       this.scoreEnemies + " citizens eliminated.",
       this.pos.x,
