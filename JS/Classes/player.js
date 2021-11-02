@@ -1,5 +1,5 @@
 class Player {
-  constructor(ctx, posX, posY, width, height, speed, imageName) {
+  constructor(ctx, posX, posY, width, height, speed, imageName, keys) {
     this.ctx = ctx;
     this.pos = {
       x: posX,
@@ -21,8 +21,16 @@ class Player {
       height: window.innerHeight,
     };
 
+    this.keys = keys;
+    this.movingLeft = false;
+    this.movingRight = false;
+    this.movingUp = false;
+    this.movingDown = false;
+
     this.imageInstance = undefined;
     this.imageName = imageName;
+
+    this.setListeners();
 
     this.init();
   }
@@ -46,47 +54,82 @@ class Player {
     );
   }
 
-  minusMoveY() {
-    if (this.pos.y > (this.canvasSize.height / 10) * 3) {
+  move() {
+    if (this.pos.y > (this.canvasSize.height / 10) * 3 && this.movingUp) {
       this.pos.y -= this.speed;
       this.framesIndexY = 3;
-      this.framesIndexX++;
-      if (this.framesIndexX === 4) {
-        this.framesIndexX = 0;
-      }
     }
-  }
 
-  minusMoveX() {
-    if (this.pos.x > 0) {
+    if (this.pos.x > 0 && this.movingLeft) {
       this.pos.x -= this.speed;
       this.framesIndexY = 1;
-      this.framesIndexX++;
-      if (this.framesIndexX === 4) {
-        this.framesIndexX = 0;
-      }
     }
-  }
 
-  plusMoveY() {
-    if (this.pos.y < this.canvasSize.height - this.size.height) {
+    if (
+      this.pos.y < this.canvasSize.height - this.size.height &&
+      this.movingDown
+    ) {
       this.pos.y += this.speed;
       this.framesIndexY = 0;
-      this.framesIndexX++;
-      if (this.framesIndexX === 4) {
-        this.framesIndexX = 0;
-      }
+    }
+
+    if (
+      this.pos.x < this.canvasSize.width - this.size.width &&
+      this.movingRight
+    ) {
+      this.pos.x += this.speed;
+      this.framesIndexY = 2;
     }
   }
 
-  plusMoveX() {
-    if (this.pos.x < this.canvasSize.width - this.size.width) {
-      this.pos.x += this.speed;
-      this.framesIndexY = 2;
-      this.framesIndexX++;
-      if (this.framesIndexX === 4) {
-        this.framesIndexX = 0;
-      }
+  animate() {
+    this.framesIndexX++;
+    if (this.framesIndexX === 4) {
+      this.framesIndexX = 0;
     }
+  }
+
+  setListeners() {
+    document.addEventListener("keydown", (e) => {
+      switch (e.keyCode) {
+        case this.keys.UP:
+          this.movingUp = true;
+          this.animate();
+          break;
+        case this.keys.DOWN:
+          this.movingDown = true;
+          this.animate();
+          break;
+        case this.keys.RIGHT:
+          this.movingRight = true;
+          this.animate();
+          break;
+        case this.keys.LEFT:
+          this.movingLeft = true;
+          this.animate();
+          break;
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      switch (e.keyCode) {
+        case this.keys.RIGHT:
+          this.movingRight = false;
+          this.animate();
+          break;
+        case this.keys.LEFT:
+          this.movingLeft = false;
+          this.animate();
+          break;
+        case this.keys.UP:
+          this.movingUp = false;
+          this.animate();
+          break;
+        case this.keys.DOWN:
+          this.movingDown = false;
+          this.animate();
+          break;
+      }
+    });
   }
 }

@@ -60,18 +60,17 @@ const gameStart = {
     "GameOver.png",
   ],
   keys: {
-    ARROW_DOWN: "ArrowDown",
-    ARROW_UP: "ArrowUp",
-    ARROW_LEFT: "ArrowLeft",
-    ARROW_RIGHT: "ArrowRight",
-    // SPACE: " ",
+    UP: 38,
+    DOWN: 40,
+    RIGHT: 39,
+    LEFT: 37,
+    //SPACE: 32,
   },
 
   init() {
     this.setContext();
     this.setDimensions();
     this.createAll();
-    this.setListeners();
     this.start();
   },
 
@@ -95,10 +94,10 @@ const gameStart = {
         this.framesCount = 0;
       }
 
-      if (this.framesCount % 20 === 0) {
+      if (this.framesCount % 120 === 0) {
         this.createCitizens();
       }
-      if (this.framesCount % (20 - this.waveGenerator) === 0) {
+      if (this.framesCount % (60 - this.waveGenerator) === 0) {
         this.createEnemy1();
       }
       if (this.saveCitizens >= 30) {
@@ -106,7 +105,7 @@ const gameStart = {
           this.createEnemy2();
         }
       }
-      if (this.player.speed < 48.3) {
+      if (this.player.speed < 6.44) {
         if (this.framesCount % 2700 === 0) {
           this.createPotion1();
         }
@@ -118,7 +117,7 @@ const gameStart = {
         }
       }
 
-      if (this.speedCounter2 < 3 && this.player.speed < 48.3) {
+      if (this.speedCounter2 < 3 && this.player.speed < 6.44) {
         if (this.framesCount % 3800 === 0) {
           this.speedCounter2++;
           this.createPotion3();
@@ -158,6 +157,7 @@ const gameStart = {
   moveAll() {
     this.moveCitizens();
     this.moveEnemies();
+    this.movePlayer();
     //this.movePotion1();
   },
 
@@ -327,6 +327,10 @@ const gameStart = {
     );
   },
 
+  movePlayer() {
+    this.player.move(this.framesCount);
+  },
+
   createPlayer() {
     this.player = new Player(
       this.ctx,
@@ -334,8 +338,9 @@ const gameStart = {
       this.canvasSize.height / 2,
       101,
       140,
-      30,
-      "Hulk.png"
+      4,
+      "Hulk.png",
+      this.keys
     );
     //Definir posteriormente velocidad del jugador para los potenciadores
   },
@@ -564,44 +569,6 @@ const gameStart = {
         )
       );
     });
-  },
-
-  setListeners() {
-    document.onkeydown = (e) => {
-      if (e.key === this.keys.ARROW_DOWN) {
-        this.player.plusMoveY();
-      }
-      if (e.key === this.keys.ARROW_UP) {
-        this.player.minusMoveY();
-      }
-      if (e.key === this.keys.ARROW_LEFT) {
-        this.player.minusMoveX();
-      }
-      if (e.key === this.keys.ARROW_RIGHT) {
-        this.player.plusMoveX();
-      }
-
-      // if (e.key === this.key[40]) {
-      //   this.player.plusMoveY();
-      //   console.log(e.key);
-      // }
-      // if (e.key === this.key[38]) {
-      //   console.log("asd1");
-      //   this.player.minusMoveY();
-      // }
-      // if (e.key === this.key[37]) {
-      //   console.log("asd2");
-      //   this.player.minusMoveX();
-      // }
-      // if (e.key === this.key[39]) {
-      //   console.log("asd3");
-      //   this.player.plusMoveX();
-      // }
-      // if (e.key === this.keys.player.SPACE) {
-      //   this.player.shoot();
-      // }
-    };
-    document.onkeydown = (el) => {};
   },
 
   gameOver() {
