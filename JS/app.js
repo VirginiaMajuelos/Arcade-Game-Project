@@ -167,7 +167,7 @@ const gameStart = {
   },
 
   drawPlayer() {
-    this.player.drawSprite();
+    this.player.drawSprite(this.framesCount);
   },
 
   drawEnemies() {
@@ -328,7 +328,7 @@ const gameStart = {
   },
 
   movePlayer() {
-    this.player.move(this.framesCount);
+    this.player.move();
   },
 
   createPlayer() {
@@ -340,7 +340,8 @@ const gameStart = {
       140,
       4,
       "Hulk.png",
-      this.keys
+      this.keys,
+      this.framesCount
     );
     //Definir posteriormente velocidad del jugador para los potenciadores
   },
