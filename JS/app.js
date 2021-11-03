@@ -2,8 +2,8 @@ const replay = document.getElementById("replay");
 const startButton = document.getElementById("start-button2");
 
 const gameStart = {
-  name: "",
-  description: "",
+  name: "Smash them",
+  description: "Smash people and save people, not failure",
   version: "1.0.0",
   author: "Virginia Majuelo & Alvaro Teran",
   license: undefined,
@@ -17,14 +17,14 @@ const gameStart = {
   round: undefined,
   player: undefined,
   potion1: undefined,
+  enemyOneSpeed: 4,
+  enemyTwoSpeed: 6.5,
   saveCitizens: 0,
   waveGenerator: 0,
   eliminatedCitizens: 0,
   levelUp: 0,
   intervalId: 0,
   framesCount: 0,
-  speedCounter: 0,
-  speedCounter2: 0,
   scoreBoard: undefined,
   allCitizens: [],
   allPotions: [],
@@ -72,6 +72,12 @@ const gameStart = {
     this.setDimensions();
     this.createAll();
     this.start();
+    if (this.saveCitizens < 20) {
+      sounds.music.preload = "auto";
+      sounds.music.load();
+      sounds.music.play();
+      sounds.music.volume = 0.5;
+    }
   },
 
   setContext() {
@@ -106,22 +112,17 @@ const gameStart = {
         }
       }
       if (this.player.speed < 6.44) {
-        if (this.framesCount % 2700 === 0) {
+        if (this.framesCount % 2400 === 0) {
           this.createPotion1();
         }
       }
-      if (this.speedCounter < 4) {
-        if (this.framesCount % 3400 === 0) {
-          this.speedCounter++;
+      if (this.enemyOneSpeed > 3.25) {
+        if (this.framesCount % 2700 === 0) {
           this.createPotion2();
         }
       }
-
-      if (this.speedCounter2 < 3 && this.player.speed < 6.44) {
-        if (this.framesCount % 3800 === 0) {
-          this.speedCounter2++;
-          this.createPotion3();
-        }
+      if (this.framesCount % 3800 === 0) {
+        this.createPotion3();
       }
       this.clearScreen();
       this.colisionPlayerEnemy();
@@ -130,7 +131,6 @@ const gameStart = {
       this.colisionPlayerPotion3();
       this.moveAll();
       this.drawAll();
-
       this.clearAll();
     }, 1000 / this.frames);
   },
@@ -147,9 +147,7 @@ const gameStart = {
     this.drawPlayer();
     this.drawCitizens();
     this.drawEnemies();
-    this.drawPotion1();
-    this.drawPotion2();
-    this.drawPotion3();
+    this.drawPotion();
     this.drawTextFrame();
     this.drawScoreBoard();
   },
@@ -167,7 +165,16 @@ const gameStart = {
   },
 
   drawPlayer() {
-    this.player.drawSprite(this.framesCount);
+    if (
+      this.framesCount % 20 === 0 &&
+      (this.player.movingLeft === true ||
+        this.player.movingRight === true ||
+        this.player.movingUp === true ||
+        this.player.movingDown === true)
+    ) {
+      this.player.animate();
+    }
+    this.player.drawSprite();
   },
 
   drawEnemies() {
@@ -176,21 +183,9 @@ const gameStart = {
     });
   },
 
-  drawPotion1() {
-    this.allPotions.forEach((potion1) => {
-      potion1.draw();
-    });
-  },
-
-  drawPotion2() {
-    this.allPotions.forEach((potion2) => {
-      potion2.draw();
-    });
-  },
-
-  drawPotion3() {
-    this.allPotions.forEach((potion3) => {
-      potion3.draw();
+  drawPotion() {
+    this.allPotions.forEach((potion) => {
+      potion.draw();
     });
   },
 
@@ -270,7 +265,7 @@ const gameStart = {
         this.positionYPotions,
         50,
         50,
-        "PocionAmarilla.png"
+        "PocionVerde.png"
       )
     );
   },
@@ -296,7 +291,7 @@ const gameStart = {
         this.positionYPotions,
         50,
         50,
-        "PocionVerde.png"
+        "PocionAmarilla.png"
       )
     );
   },
@@ -391,14 +386,14 @@ const gameStart = {
         this.positionYEnemies,
         80,
         120,
-        4,
+        this.enemyOneSpeed,
         this.nameEnemy
       )
     );
   },
 
   createEnemy2() {
-    this.randomRoad = Math.floor(Math.random() * 4);
+    this.randomRoad = Math.floor(Math.random() * 3);
 
     this.minimunRoad = (this.canvasSize.height / 10) * 3;
 
@@ -412,7 +407,7 @@ const gameStart = {
         this.positionYEnemies,
         85,
         140,
-        6.5,
+        this.enemyTwoSpeed,
         "Ronan.png"
       )
     );
@@ -426,6 +421,12 @@ const gameStart = {
         this.player.pos.y < enemy.pos.y + enemy.size.height &&
         this.player.size.height + this.player.pos.y > enemy.pos.y
       ) {
+        if (!sounds.smash.play()) {
+          sounds.smash.preload = "auto";
+          sounds.smash.load();
+          sounds.smash.play();
+          sounds.smash.volume = 0.1;
+        }
         this.allEnemies.splice(i, 1);
       } else {
         return false;
@@ -435,12 +436,12 @@ const gameStart = {
 
   colisionPlayerPotion1() {
     this.allPotions.map((potion1, i) => {
-      console.log("potion1");
       if (
         this.player.pos.x < potion1.pos.x + potion1.size.width &&
         this.player.pos.x + this.player.size.width > potion1.pos.x &&
         this.player.pos.y < potion1.pos.y + potion1.size.height &&
-        this.player.size.height + this.player.pos.y > potion1.pos.y
+        this.player.size.height + this.player.pos.y > potion1.pos.y &&
+        potion1.imageName == "PocionVerde.png"
       ) {
         this.allPotions.splice(i, 1);
         this.player.speed = 1.1 * this.player.speed;
@@ -456,10 +457,12 @@ const gameStart = {
         this.player.pos.x < potion2.pos.x + potion2.size.width &&
         this.player.pos.x + this.player.size.width > potion2.pos.x &&
         this.player.pos.y < potion2.pos.y + potion2.size.height &&
-        this.player.size.height + this.player.pos.y > potion2.pos.y
+        this.player.size.height + this.player.pos.y > potion2.pos.y &&
+        potion2.imageName == "PocionAmarilla.png"
       ) {
         this.allPotions.splice(i, 1);
-        this.enemy.speed = 0.9 * this.enemy.speed;
+        this.enemyTwoSpeed = 0.9 * this.enemyTwoSpeed;
+        this.enemyOneSpeed = 0.9 * this.enemyOneSpeed;
       } else {
         return false;
       }
@@ -472,17 +475,11 @@ const gameStart = {
         this.player.pos.x < potion3.pos.x + potion3.size.width &&
         this.player.pos.x + this.player.size.width > potion3.pos.x &&
         this.player.pos.y < potion3.pos.y + potion3.size.height &&
-        this.player.size.height + this.player.pos.y > potion3.pos.y
+        this.player.size.height + this.player.pos.y > potion3.pos.y &&
+        potion3.imageName == "PocionNegra.png"
       ) {
         this.allPotions.splice(i, 1);
-        this.randomChance = Math.floor(Math.random() * 100);
-        if (this.randomChance < 49) {
-          this.player.speed *= 1.1;
-        } else if (49 <= this.randomChance < 98) {
-          this.enemy.speed *= 1.1;
-        } else {
-          gameOver();
-        }
+        this.allEnemies.splice(0);
       } else {
         return false;
       }
@@ -584,8 +581,8 @@ const gameStart = {
     document.getElementById("start-button2").addEventListener("click", () => {
       replay.classList.remove("display");
       replay.classList.add("hidden");
-      inicialMenu.classList.remove("hidden");
-      inicialMenu.classList.add("replay");
+      play.classList.remove("hidden");
+      play.classList.add("replay");
     });
   },
 
@@ -605,8 +602,6 @@ const gameStart = {
       (this.levelUp = 0),
       (this.intervalId = 0),
       (this.framesCount = 0),
-      (this.speedCounter = 0),
-      (this.speedCounter2 = 0),
       (this.scoreBoard = undefined),
       (this.allCitizens = []),
       (this.allPotions = []),

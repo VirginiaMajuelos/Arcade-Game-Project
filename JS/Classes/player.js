@@ -1,5 +1,15 @@
 class Player {
-  constructor(ctx, posX, posY, width, height, speed, imageName, keys) {
+  constructor(
+    ctx,
+    posX,
+    posY,
+    width,
+    height,
+    speed,
+    imageName,
+    keys,
+    gameFrames
+  ) {
     this.ctx = ctx;
     this.pos = {
       x: posX,
@@ -20,7 +30,7 @@ class Player {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-
+    this.gameFrames = gameFrames;
     this.keys = keys;
     this.movingLeft = false;
     this.movingRight = false;
@@ -29,9 +39,7 @@ class Player {
 
     this.imageInstance = undefined;
     this.imageName = imageName;
-
     this.setListeners();
-
     this.init();
   }
 
@@ -83,7 +91,9 @@ class Player {
   }
 
   animate() {
-    this.framesIndexX++;
+    if (this.gameFrames % 20 === 0) {
+      this.framesIndexX++;
+    }
     if (this.framesIndexX === 4) {
       this.framesIndexX = 0;
     }
@@ -94,19 +104,15 @@ class Player {
       switch (e.keyCode) {
         case this.keys.UP:
           this.movingUp = true;
-          this.animate();
           break;
         case this.keys.DOWN:
           this.movingDown = true;
-          this.animate();
           break;
         case this.keys.RIGHT:
           this.movingRight = true;
-          this.animate();
           break;
         case this.keys.LEFT:
           this.movingLeft = true;
-          this.animate();
           break;
       }
     });
@@ -115,19 +121,15 @@ class Player {
       switch (e.keyCode) {
         case this.keys.RIGHT:
           this.movingRight = false;
-          this.animate();
           break;
         case this.keys.LEFT:
           this.movingLeft = false;
-          this.animate();
           break;
         case this.keys.UP:
           this.movingUp = false;
-          this.animate();
           break;
         case this.keys.DOWN:
           this.movingDown = false;
-          this.animate();
           break;
       }
     });
