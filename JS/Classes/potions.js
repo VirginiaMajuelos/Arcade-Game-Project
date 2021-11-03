@@ -15,12 +15,17 @@ class Potions {
     this.imageInstance = undefined;
     this.imageName = imageName;
 
+    this.isFinished = false;
+
     this.init();
   }
 
   init() {
     this.imageInstance = new Image();
     this.imageInstance.src = `images/${this.imageName}`;
+    setTimeout(() => {
+      this.isFinished = true;
+    }, 14000);
   }
 
   draw() {

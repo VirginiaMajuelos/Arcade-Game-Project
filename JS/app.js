@@ -1,22 +1,16 @@
 const replay = document.getElementById("replay");
-const startButton = document.getElementById("start-button2");
 
 const gameStart = {
   name: "Smash them",
   description: "Smash people and save people, not failure",
   version: "1.0.0",
-  author: "Virginia Majuelo & Alvaro Teran",
+  author: "Virginia Majuelos & Alvaro Teran",
   license: undefined,
   repository: undefined,
   ctx: undefined,
   canvasDOM: undefined,
   canvasSize: { width: undefined, height: undefined },
   frames: 60,
-  sky: undefined,
-  goal: undefined,
-  round: undefined,
-  player: undefined,
-  potion1: undefined,
   enemyOneSpeed: 4,
   enemyTwoSpeed: 6.5,
   saveCitizens: 0,
@@ -30,6 +24,7 @@ const gameStart = {
   allPotions: [],
   allEnemies: [],
   allPhotoFrames: [],
+  allExplosions: [],
   photoCitizens: [
     "Aladdin.png",
     "Jasmine.png",
@@ -72,12 +67,10 @@ const gameStart = {
     this.setDimensions();
     this.createAll();
     this.start();
-    if (this.saveCitizens < 20) {
-      sounds.music.preload = "auto";
-      sounds.music.load();
-      sounds.music.play();
-      sounds.music.volume = 0.5;
-    }
+    sounds.music.preload = "auto";
+    sounds.music.load();
+    sounds.music.play();
+    sounds.music.volume = 0.6;
   },
 
   setContext() {
@@ -95,15 +88,14 @@ const gameStart = {
   start() {
     this.intervalId = setInterval(() => {
       this.framesCount++;
-
       if (this.framesCount > 4000) {
         this.framesCount = 0;
       }
 
-      if (this.framesCount % 120 === 0) {
+      if (this.framesCount % 10 === 0) {
         this.createCitizens();
       }
-      if (this.framesCount % (60 - this.waveGenerator) === 0) {
+      if (this.framesCount % (10 - this.waveGenerator) === 0) {
         this.createEnemy1();
       }
       if (this.saveCitizens >= 30) {
@@ -128,7 +120,7 @@ const gameStart = {
       this.colisionPlayerEnemy();
       this.colisionPlayerPotion1();
       this.colisionPlayerPotion2();
-      this.colisionPlayerPotion3();
+      this.colisionPlayerThanos();
       this.moveAll();
       this.drawAll();
       this.clearAll();
@@ -150,6 +142,9 @@ const gameStart = {
     this.drawPotion();
     this.drawTextFrame();
     this.drawScoreBoard();
+    if (this.createExplosion) {
+      this.drawExplosion();
+    }
   },
 
   moveAll() {
@@ -162,6 +157,8 @@ const gameStart = {
   clearAll() {
     this.clearCitizens();
     this.clearEnemies();
+    this.clearExplosion();
+    this.clearPotions();
   },
 
   drawPlayer() {
@@ -210,10 +207,14 @@ const gameStart = {
       this.allPhotoFrames[3].draw();
     } else if (this.saveCitizens === 40) {
       this.allPhotoFrames[4].draw();
+      this.enemyTwoSpeed += 0.1;
     } else if (this.saveCitizens === 50) {
       this.allPhotoFrames[5].draw();
+      this.enemyOneSpeed += 0.1;
     } else if (this.saveCitizens === 60) {
       this.allPhotoFrames[6].draw();
+      this.gameOver();
+      window.setTimeout(this.winMenu, 2500);
     }
   },
 
@@ -315,9 +316,22 @@ const gameStart = {
         this.ctx,
         this.positionXPotions,
         this.positionYPotions,
-        50,
-        50,
-        "PocionNegra.png"
+        100,
+        80,
+        "thanos.png"
+      )
+    );
+  },
+
+  createExplosion(enemy) {
+    this.allExplosions.push(
+      new Frame(
+        this.ctx,
+        enemy.pos.x,
+        enemy.pos.y + enemy.size.height / 4,
+        100,
+        100,
+        "explosion.png"
       )
     );
   },
@@ -413,6 +427,12 @@ const gameStart = {
     );
   },
 
+  drawExplosion() {
+    this.allExplosions.forEach((explosion) => {
+      explosion.drawSprite(this.framesCount);
+    });
+  },
+
   colisionPlayerEnemy() {
     this.allEnemies.map((enemy, i) => {
       if (
@@ -421,6 +441,7 @@ const gameStart = {
         this.player.pos.y < enemy.pos.y + enemy.size.height &&
         this.player.size.height + this.player.pos.y > enemy.pos.y
       ) {
+        this.createExplosion(enemy);
         if (!sounds.smash.play()) {
           sounds.smash.preload = "auto";
           sounds.smash.load();
@@ -469,14 +490,14 @@ const gameStart = {
     });
   },
 
-  colisionPlayerPotion3() {
+  colisionPlayerThanos() {
     this.allPotions.map((potion3, i) => {
       if (
         this.player.pos.x < potion3.pos.x + potion3.size.width &&
         this.player.pos.x + this.player.size.width > potion3.pos.x &&
         this.player.pos.y < potion3.pos.y + potion3.size.height &&
         this.player.size.height + this.player.pos.y > potion3.pos.y &&
-        potion3.imageName == "PocionNegra.png"
+        potion3.imageName == "thanos.png"
       ) {
         this.allPotions.splice(i, 1);
         this.allEnemies.splice(0);
@@ -503,7 +524,6 @@ const gameStart = {
             this.allPhotoFrames[7].draw();
             this.gameOver();
             window.setTimeout(this.reloadANewGame, 2500);
-            this.resetValues();
           }
         } else {
           return false;
@@ -535,13 +555,17 @@ const gameStart = {
   },
 
   clearPotions() {
-    this.allPotions = this.allCitizens.filter((potions) => {
-      if (this.colisionPlayerPotion1()) {
-        return true;
-      } else if (this.colisionPlayerPotion2()) {
-        return true;
-      } else if (this.colisionPlayerPotion3()) {
-        return true;
+    this.allPotions.map((potion, i) => {
+      if (potion.isFinished === true) {
+        this.allPotions.splice(i, 1);
+      }
+    });
+  },
+
+  clearExplosion() {
+    this.allExplosions.map((explosion, i) => {
+      if (explosion.isFinished === true) {
+        this.allExplosions.splice(i, 1);
       }
     });
   },
@@ -571,6 +595,26 @@ const gameStart = {
 
   gameOver() {
     clearInterval(this.intervalId);
+    sounds.music.pause();
+    sounds.music.currentTime = 0;
+    (this.ctx = undefined),
+      (this.canvasDOM = undefined),
+      (this.canvasSize = { width: undefined, height: undefined }),
+      (this.frames = 60),
+      (this.saveCitizens = 0),
+      (this.waveGenerator = 0),
+      (this.eliminatedCitizens = 0),
+      (this.enemyOneSpeed = 4),
+      (this.enemyTwoSpeed = 6.5),
+      (this.levelUp = 0),
+      (this.intervalId = 0),
+      (this.framesCount = 0),
+      (this.allExplosions = []),
+      (this.scoreBoard = undefined),
+      (this.allCitizens = []),
+      (this.allPotions = []),
+      (this.allEnemies = []),
+      (this.allPhotoFrames = []);
   },
 
   reloadANewGame() {
@@ -578,34 +622,33 @@ const gameStart = {
     replay.classList.add("display");
     play.classList.remove("display");
     play.classList.add("hidden");
-    document.getElementById("start-button2").addEventListener("click", () => {
+
+    document.getElementById("back-menu").addEventListener("click", () => {
+      replay.classList.remove("display");
+      replay.classList.add("hidden");
+      inicialMenu.classList.remove("hidden");
+      inicialMenu.classList.add("display");
+    });
+
+    document.getElementById("new-game").addEventListener("click", () => {
+      this.init();
       replay.classList.remove("display");
       replay.classList.add("hidden");
       play.classList.remove("hidden");
-      play.classList.add("replay");
+      play.classList.add("display");
     });
   },
 
-  resetValues() {
-    (this.ctx = undefined),
-      (this.canvasDOM = undefined),
-      (this.canvasSize = { width: undefined, height: undefined }),
-      (this.frames = 60),
-      (this.sky = undefined),
-      (this.goal = undefined),
-      (this.round = undefined),
-      (this.player = undefined),
-      (this.potion1 = undefined),
-      (this.saveCitizens = 0),
-      (this.waveGenerator = 0),
-      (this.eliminatedCitizens = 0),
-      (this.levelUp = 0),
-      (this.intervalId = 0),
-      (this.framesCount = 0),
-      (this.scoreBoard = undefined),
-      (this.allCitizens = []),
-      (this.allPotions = []),
-      (this.allEnemies = []),
-      (this.allPhotoFrames = []);
-  },
+  // winMenu() {
+  //   win.classList.remove("hidden");
+  //   win.classList.add("display");
+  //   play.classList.remove("display");
+  //   play.classList.add("hidden");
+  //   document.getElementById("start-button2").addEventListener("click", () => {
+  //     win.classList.remove("display");
+  //     win.classList.add("hidden");
+  //     replay.classList.remove("hidden");
+  //     replay.classList.add("display");
+  //   });
+  // },
 };

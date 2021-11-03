@@ -9,18 +9,135 @@
   display: none;
 }
 .display {
-  display: block;
+  display: inline;
 }
 .body-color {
   background-color: black;
 }
-.img {
-  margin: 10px auto;
-  display: block;
-  width: 60%;
-}
+
 #score-msg {
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   font-size: 72px;
   color: white;
+}
+
+h1 {
+  display: inline;
+  font-size: 110px;
+  color: blanchedalmond;
+  text-shadow: 10px 10px black;
+}
+body {
+  width: 100%;
+  height: 100vh;
+  background: no-repeat;
+  background: #aa6688; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #442244,
+    #aa6666
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #442244, #aa6666);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+#replay {
+  width: 100%;
+  height: 100vh;
+  background: no-repeat;
+  background: #aa6688; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #442244,
+    #aa6666
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #442244, #aa6666);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.hulk-img {
+  width: 450px;
+  height: 250px;
+  border: 4px solid blanchedalmond;
+}
+.arrow-img {
+  width: 150px;
+  height: 80px;
+  padding: 2px;
+}
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2%;
+}
+
+#instrucions {
+  padding: 15px;
+  justify-content: center;
+  text-align: center;
+}
+
+#instrucions h2 {
+  padding: 50px 20px 20px 20px;
+  font-size: 2em;
+  text-decoration: underline;
+}
+#instrucions p {
+  padding: 10px;
+  font-size: 2em;
+}
+.game-intro {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+
+.game-final {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  padding: 85px;
+}
+.gameover-final {
+  margin: 25px;
+}
+.try-again {
+  margin: 25px;
+}
+
+p {
+  color: #bfd371;
+}
+
+#start-button {
+  padding: 10px 25px 10px 25px;
+  font-size: 20px;
+  background-color: blanchedalmond;
+  border-bottom: 4px gray;
+  border-radius: 4px;
+}
+
+.try-again {
+  font-size: 80px;
+  width: 50%;
+  color: blanchedalmond;
+  text-shadow: 2px 2px black;
+}
+
+.bottons-final {
+  display: inline;
+}
+
+.bottons-final button {
+  padding: 10px 15px 10px 15px;
+
+  font-size: 20px;
+  background-color: blanchedalmond;
+  border-bottom: 4px gray;
+  border-radius: 4px;
+  margin: 15px;
 }

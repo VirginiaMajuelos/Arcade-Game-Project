@@ -18,13 +18,23 @@
 
     <section id="inicial-menu" class="display">
       <div id="instrucions">
+        <h1>SMASH THEM!</h1>
+        <h2>The instructions:</h2>
         <p>
-          estas son las instrucciones para el juego mas chulo que has visto
-          payaso!
+          You win when save 50 citizens. To protect them you should eliminate
+          all enemies posible
         </p>
+        <img class="arrow-img" src="images/arrows.jpeg" />
+        <p class="smash">You are Hulk, smash them!</p>
       </div>
       <div class="game-intro">
-        <button id="start-button">StartGame</button>
+        <button id="start-button">Start Game!</button>
+      </div>
+      <div class="box">
+        <img
+          class="hulk-img"
+          src="https://media.giphy.com/media/10H4by255F2UsU/giphy.gif"
+        />
       </div>
     </section>
 
@@ -33,13 +43,17 @@
         <canvas id="canvas" class="hidden"></canvas>
       </div>
     </section>
-
     <section id="replay" class="hidden">
-      <div class="game-intro">
-        <div id="instrucions">
-          <p>Para volver a jugar dale al boton cabezon</p>
+      <div class="game-final">
+        <img
+          class="gameover-final"
+          src="https://media.giphy.com/media/eJ4j2VnYOZU8qJU3Py/giphy.gif"
+        />
+        <p class="try-again">Try again?</p>
+        <div class="bottons-final">
+          <button id="back-menu">Back Menu</button>
+          <button id="new-game">New Game</button>
         </div>
-        <button id="start-button2">StartGame</button>
       </div>
     </section>
 
@@ -49,6 +63,7 @@
     <script src="./JS/Classes/score.js"></script>
     <script src="./JS/Classes/enemies.js"></script>
     <script src="./JS/Classes/citicens.js"></script>
+    <script src="./JS/Classes/frame.js"></script>
     <script src="./JS/Classes/potions.js"></script>
     <script src="./JS/Classes/background.js"></script>
     <script src="./JS/app.js"></script>
