@@ -1,5 +1,3 @@
-const replay = document.getElementById("replay");
-
 const gameStart = {
   name: "Smash them",
   description: "Smash people and save people, not failure",
@@ -11,8 +9,8 @@ const gameStart = {
   canvasDOM: undefined,
   canvasSize: { width: undefined, height: undefined },
   frames: 60,
-  enemyOneSpeed: 4,
-  enemyTwoSpeed: 6.5,
+  enemyOneSpeed: 4.3,
+  enemyTwoSpeed: 6.8,
   saveCitizens: 0,
   waveGenerator: 0,
   eliminatedCitizens: 0,
@@ -20,11 +18,12 @@ const gameStart = {
   intervalId: 0,
   framesCount: 0,
   scoreBoard: undefined,
+  namePotion: undefined,
   allCitizens: [],
   allPotions: [],
   allEnemies: [],
   allPhotoFrames: [],
-  allExplosions: [],
+  allPunches: [],
   photoCitizens: [
     "Aladdin.png",
     "Jasmine.png",
@@ -59,7 +58,7 @@ const gameStart = {
     DOWN: 40,
     RIGHT: 39,
     LEFT: 37,
-    //SPACE: 32,
+    SPACE: 32,
   },
 
   init() {
@@ -67,10 +66,10 @@ const gameStart = {
     this.setDimensions();
     this.createAll();
     this.start();
-    sounds.music.preload = "auto";
-    sounds.music.load();
-    sounds.music.play();
-    sounds.music.volume = 0.6;
+    sounds.gameMusic.preload = "auto";
+    sounds.gameMusic.load();
+    sounds.gameMusic.play();
+    sounds.gameMusic.volume = 0.6;
   },
 
   setContext() {
@@ -92,10 +91,10 @@ const gameStart = {
         this.framesCount = 0;
       }
 
-      if (this.framesCount % 10 === 0) {
+      if (this.framesCount % 120 === 0) {
         this.createCitizens();
       }
-      if (this.framesCount % (10 - this.waveGenerator) === 0) {
+      if (this.framesCount % (55 - this.waveGenerator) === 0) {
         this.createEnemy1();
       }
       if (this.saveCitizens >= 30) {
@@ -103,24 +102,26 @@ const gameStart = {
           this.createEnemy2();
         }
       }
-      if (this.player.speed < 6.44) {
-        if (this.framesCount % 2400 === 0) {
-          this.createPotion1();
+      if (this.player.speed < 5.28) {
+        if (this.framesCount % 2000 === 0) {
+          this.createPotion("PocionVerde.png");
         }
       }
-      if (this.enemyOneSpeed > 3.25) {
-        if (this.framesCount % 2700 === 0) {
-          this.createPotion2();
+      if (this.enemyOneSpeed > 3.6) {
+        if (this.framesCount % 2600 === 0) {
+          this.createPotion("PocionAmarilla.png");
         }
       }
-      if (this.framesCount % 3800 === 0) {
-        this.createPotion3();
+      if (this.framesCount % 3200 === 0) {
+        this.createPotion("ThanosGlove.png");
       }
       this.clearScreen();
       this.colisionPlayerEnemy();
-      this.colisionPlayerPotion1();
-      this.colisionPlayerPotion2();
-      this.colisionPlayerThanos();
+      this.colisionPlayerPotion(
+        this.namePotion,
+        this.enemyOneSpeed,
+        this.enemyTwoSpeed
+      );
       this.moveAll();
       this.drawAll();
       this.clearAll();
@@ -142,8 +143,8 @@ const gameStart = {
     this.drawPotion();
     this.drawTextFrame();
     this.drawScoreBoard();
-    if (this.createExplosion) {
-      this.drawExplosion();
+    if (this.createPunch) {
+      this.drawPunch();
     }
   },
 
@@ -157,7 +158,7 @@ const gameStart = {
   clearAll() {
     this.clearCitizens();
     this.clearEnemies();
-    this.clearExplosion();
+    this.clearPunches();
     this.clearPotions();
   },
 
@@ -182,7 +183,7 @@ const gameStart = {
 
   drawPotion() {
     this.allPotions.forEach((potion) => {
-      potion.draw();
+      potion.draw(this.namePotion);
     });
   },
 
@@ -207,12 +208,11 @@ const gameStart = {
       this.allPhotoFrames[3].draw();
     } else if (this.saveCitizens === 40) {
       this.allPhotoFrames[4].draw();
-      this.enemyTwoSpeed += 0.1;
     } else if (this.saveCitizens === 50) {
       this.allPhotoFrames[5].draw();
-      this.enemyOneSpeed += 0.1;
     } else if (this.saveCitizens === 60) {
       this.allPhotoFrames[6].draw();
+      sounds.winMusic.play();
       this.gameOver();
       window.setTimeout(this.winMenu, 2500);
     }
@@ -245,12 +245,14 @@ const gameStart = {
     );
   },
 
-  createPotion1() {
+  createPotion(namePotion) {
     this.randomNumberX = this.canvasSize.width * Math.random();
 
     this.randomNumberY = Math.floor(Math.random() * 3);
 
     this.minimunRoadY = (this.canvasSize.height / 10) * 3.5;
+
+    this.namePotion = namePotion;
 
     this.minimunRoadX = (this.canvasSize.width / 10) * 2;
 
@@ -258,80 +260,39 @@ const gameStart = {
 
     this.positionYPotions =
       this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
+
+    if (
+      this.namePotion == "PocionVerde.png" ||
+      this.namePotion == "PocionAmarilla.png"
+    ) {
+      this.potionWidth = 50;
+      this.potionHeidht = 50;
+    } else if (this.namePotion == "ThanosGlove.png") {
+      this.potionWidth = 100;
+      this.potionHeidht = 80;
+    }
 
     this.allPotions.push(
       new Potions(
         this.ctx,
         this.positionXPotions,
         this.positionYPotions,
-        50,
-        50,
-        "PocionVerde.png"
+        this.potionWidth,
+        this.potionHeidht,
+        this.namePotion
       )
     );
   },
 
-  createPotion2() {
-    this.randomNumberX = this.canvasSize.width * Math.random();
-
-    this.randomNumberY = Math.floor(Math.random() * 3);
-
-    this.minimunRoadY = (this.canvasSize.height / 10) * 3.5;
-
-    this.minimunRoadX = (this.canvasSize.width / 10) * 2;
-
-    this.positionXPotions = this.minimunRoadX + this.randomNumberX;
-
-    this.positionYPotions =
-      this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
-
-    this.allPotions.push(
-      new Potions(
-        this.ctx,
-        this.positionXPotions,
-        this.positionYPotions,
-        50,
-        50,
-        "PocionAmarilla.png"
-      )
-    );
-  },
-
-  createPotion3() {
-    this.randomNumberX = this.canvasSize.width * Math.random();
-
-    this.randomNumberY = Math.floor(Math.random() * 3);
-
-    this.minimunRoadY = (this.canvasSize.height / 10) * 3.5;
-
-    this.minimunRoadX = (this.canvasSize.width / 10) * 2;
-
-    this.positionXPotions = this.minimunRoadX + this.randomNumberX;
-
-    this.positionYPotions =
-      this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
-
-    this.positionYEnemies = this.allPotions.push(
-      new Potions(
-        this.ctx,
-        this.positionXPotions,
-        this.positionYPotions,
-        100,
-        80,
-        "thanos.png"
-      )
-    );
-  },
-
-  createExplosion(enemy) {
-    this.allExplosions.push(
+  createPunch(enemy) {
+    this.allPunches.push(
       new Frame(
         this.ctx,
         enemy.pos.x,
         enemy.pos.y + enemy.size.height / 4,
         100,
         100,
-        "explosion.png"
+        "Punch.png"
       )
     );
   },
@@ -427,9 +388,9 @@ const gameStart = {
     );
   },
 
-  drawExplosion() {
-    this.allExplosions.forEach((explosion) => {
-      explosion.drawSprite(this.framesCount);
+  drawPunch() {
+    this.allPunches.forEach((punch) => {
+      punch.drawSprite(this.framesCount);
     });
   },
 
@@ -441,12 +402,12 @@ const gameStart = {
         this.player.pos.y < enemy.pos.y + enemy.size.height &&
         this.player.size.height + this.player.pos.y > enemy.pos.y
       ) {
-        this.createExplosion(enemy);
+        this.createPunch(enemy);
         if (!sounds.smash.play()) {
           sounds.smash.preload = "auto";
           sounds.smash.load();
           sounds.smash.play();
-          sounds.smash.volume = 0.1;
+          sounds.smash.volume = 1;
         }
         this.allEnemies.splice(i, 1);
       } else {
@@ -455,52 +416,25 @@ const gameStart = {
     });
   },
 
-  colisionPlayerPotion1() {
-    this.allPotions.map((potion1, i) => {
+  colisionPlayerPotion() {
+    this.allPotions.map((potion, i) => {
       if (
-        this.player.pos.x < potion1.pos.x + potion1.size.width &&
-        this.player.pos.x + this.player.size.width > potion1.pos.x &&
-        this.player.pos.y < potion1.pos.y + potion1.size.height &&
-        this.player.size.height + this.player.pos.y > potion1.pos.y &&
-        potion1.imageName == "PocionVerde.png"
+        this.player.pos.x < potion.pos.x + potion.size.width &&
+        this.player.pos.x + this.player.size.width > potion.pos.x &&
+        this.player.pos.y < potion.pos.y + potion.size.height &&
+        this.player.size.height + this.player.pos.y > potion.pos.y
       ) {
+        if (potion.imageName === "PocionVerde.png") {
+          this.player.speed = 1.1 * this.player.speed;
+        } else if (potion.imageName === "PocionAmarilla.png") {
+          this.enemyTwoSpeed = 0.9 * this.enemyTwoSpeed;
+          this.enemyOneSpeed = 0.9 * this.enemyOneSpeed;
+        } else if (potion.imageName == "ThanosGlove.png") {
+          sounds.snap.play();
+          sounds.snap.volume = 1;
+          this.allEnemies.splice(0);
+        }
         this.allPotions.splice(i, 1);
-        this.player.speed = 1.1 * this.player.speed;
-      } else {
-        return false;
-      }
-    });
-  },
-
-  colisionPlayerPotion2() {
-    this.allPotions.map((potion2, i) => {
-      if (
-        this.player.pos.x < potion2.pos.x + potion2.size.width &&
-        this.player.pos.x + this.player.size.width > potion2.pos.x &&
-        this.player.pos.y < potion2.pos.y + potion2.size.height &&
-        this.player.size.height + this.player.pos.y > potion2.pos.y &&
-        potion2.imageName == "PocionAmarilla.png"
-      ) {
-        this.allPotions.splice(i, 1);
-        this.enemyTwoSpeed = 0.9 * this.enemyTwoSpeed;
-        this.enemyOneSpeed = 0.9 * this.enemyOneSpeed;
-      } else {
-        return false;
-      }
-    });
-  },
-
-  colisionPlayerThanos() {
-    this.allPotions.map((potion3, i) => {
-      if (
-        this.player.pos.x < potion3.pos.x + potion3.size.width &&
-        this.player.pos.x + this.player.size.width > potion3.pos.x &&
-        this.player.pos.y < potion3.pos.y + potion3.size.height &&
-        this.player.size.height + this.player.pos.y > potion3.pos.y &&
-        potion3.imageName == "thanos.png"
-      ) {
-        this.allPotions.splice(i, 1);
-        this.allEnemies.splice(0);
       } else {
         return false;
       }
@@ -521,9 +455,10 @@ const gameStart = {
           this.eliminatedCitizens++;
           this.scoreBoard.increaseScoreEnemies(this.eliminatedCitizens);
           if (this.eliminatedCitizens === 10) {
+            sounds.looseMusic.play();
             this.allPhotoFrames[7].draw();
             this.gameOver();
-            window.setTimeout(this.reloadANewGame, 2500);
+            window.setTimeout(this.reloadANewGame, 2000);
           }
         } else {
           return false;
@@ -548,7 +483,9 @@ const gameStart = {
         this.saveCitizens++;
         this.scoreBoard.increaseScorePlayer(this.saveCitizens);
         if (this.saveCitizens % 10 === 0) {
-          this.waveGenerator += 3;
+          this.waveGenerator += 5;
+          this.enemyOneSpeed += 0.11;
+          this.enemyTwoSpeed += 0.07;
         }
       }
     });
@@ -562,10 +499,10 @@ const gameStart = {
     });
   },
 
-  clearExplosion() {
-    this.allExplosions.map((explosion, i) => {
-      if (explosion.isFinished === true) {
-        this.allExplosions.splice(i, 1);
+  clearPunches() {
+    this.allPunches.map((punch, i) => {
+      if (punch.isFinished === true) {
+        this.allPunches.splice(i, 1);
       }
     });
   },
@@ -595,8 +532,8 @@ const gameStart = {
 
   gameOver() {
     clearInterval(this.intervalId);
-    sounds.music.pause();
-    sounds.music.currentTime = 0;
+    sounds.gameMusic.pause();
+    sounds.gameMusic.currentTime = 0;
     (this.ctx = undefined),
       (this.canvasDOM = undefined),
       (this.canvasSize = { width: undefined, height: undefined }),
@@ -609,7 +546,7 @@ const gameStart = {
       (this.levelUp = 0),
       (this.intervalId = 0),
       (this.framesCount = 0),
-      (this.allExplosions = []),
+      (this.allPunches = []),
       (this.scoreBoard = undefined),
       (this.allCitizens = []),
       (this.allPotions = []),
@@ -622,16 +559,19 @@ const gameStart = {
     replay.classList.add("display");
     play.classList.remove("display");
     play.classList.add("hidden");
-
     document.getElementById("back-menu").addEventListener("click", () => {
+      sounds.looseMusic.pause();
+      sounds.looseMusic.currentTime = 0;
       replay.classList.remove("display");
       replay.classList.add("hidden");
       inicialMenu.classList.remove("hidden");
       inicialMenu.classList.add("display");
+      sounds.menuMusic.play();
     });
 
     document.getElementById("new-game").addEventListener("click", () => {
-      this.init();
+      sounds.looseMusic.pause();
+      sounds.looseMusic.currentTime = 0;
       replay.classList.remove("display");
       replay.classList.add("hidden");
       play.classList.remove("hidden");
@@ -639,16 +579,29 @@ const gameStart = {
     });
   },
 
-  // winMenu() {
-  //   win.classList.remove("hidden");
-  //   win.classList.add("display");
-  //   play.classList.remove("display");
-  //   play.classList.add("hidden");
-  //   document.getElementById("start-button2").addEventListener("click", () => {
-  //     win.classList.remove("display");
-  //     win.classList.add("hidden");
-  //     replay.classList.remove("hidden");
-  //     replay.classList.add("display");
-  //   });
-  // },
+  winMenu() {
+    win.classList.remove("hidden");
+    win.classList.add("display");
+    play.classList.remove("display");
+    play.classList.add("hidden");
+
+    document.getElementById("back-menu2").addEventListener("click", () => {
+      sounds.winMusic.pause();
+      sounds.winMusic.currentTime = 0;
+      win.classList.remove("display");
+      win.classList.add("hidden");
+      inicialMenu.classList.remove("hidden");
+      inicialMenu.classList.add("display");
+      sounds.menuMusic.play();
+    });
+
+    document.getElementById("new-game2").addEventListener("click", () => {
+      sounds.winMusic.pause();
+      sounds.winMusic.currentTime = 0;
+      win.classList.remove("display");
+      win.classList.add("hidden");
+      play.classList.remove("hidden");
+      play.classList.add("display");
+    });
+  },
 };

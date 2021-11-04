@@ -11,8 +11,8 @@ class Frame {
       height: height,
     };
 
-    this.frames = 9;
-    this.framesIndexX = 2;
+    this.frames = 3;
+    this.framesIndexX = 0;
     this.framesIndexY = 2;
 
     this.canvasSize = {
@@ -48,14 +48,14 @@ class Frame {
       this.size.width,
       this.size.height
     );
-    if (framesCounter % 20 === 0) {
+    if (framesCounter % 6 === 0) {
       this.animate();
     }
   }
   animate() {
     this.framesIndexX++;
-    if (this.framesIndexX === 4) {
-      this.framesIndexX = 2;
+    if (this.framesIndexX === 3) {
+      this.framesIndexX = 0;
     }
   }
 }

@@ -100,10 +100,15 @@ body {
   justify-content: center;
   text-align: center;
   align-items: center;
-  padding: 85px;
+  padding: 100px;
 }
 .gameover-final {
   margin: 25px;
+}
+.win-final {
+  margin: 25px;
+  width: 60%;
+  height: 30%;
 }
 .try-again {
   margin: 25px;
