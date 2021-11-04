@@ -12,6 +12,7 @@ const gameStart = {
   enemyOneSpeed: 4.3,
   enemyTwoSpeed: 6.8,
   saveCitizens: 0,
+  enemiesDead: 0,
   waveGenerator: 0,
   eliminatedCitizens: 0,
   levelUp: 0,
@@ -219,7 +220,11 @@ const gameStart = {
   },
 
   drawScoreBoard() {
-    this.scoreBoard.draw(this.saveCitizens, this.eliminatedCitizens);
+    this.scoreBoard.draw(
+      this.saveCitizens,
+      this.eliminatedCitizens,
+      this.enemiesDead
+    );
   },
 
   moveEnemies() {
@@ -402,6 +407,8 @@ const gameStart = {
         this.player.pos.y < enemy.pos.y + enemy.size.height &&
         this.player.size.height + this.player.pos.y > enemy.pos.y
       ) {
+        this.enemiesDead++;
+        this.scoreBoard.increaseScoreEnemiesDead(this.enemiesDead);
         this.createPunch(enemy);
         if (!sounds.smash.play()) {
           sounds.smash.preload = "auto";
@@ -432,6 +439,8 @@ const gameStart = {
         } else if (potion.imageName == "ThanosGlove.png") {
           sounds.snap.play();
           sounds.snap.volume = 1;
+          this.enemiesDead += this.allEnemies.length;
+          this.scoreBoard.increaseScoreEnemiesDead(this.enemiesDead);
           this.allEnemies.splice(0);
         }
         this.allPotions.splice(i, 1);
@@ -540,6 +549,7 @@ const gameStart = {
       (this.frames = 60),
       (this.saveCitizens = 0),
       (this.waveGenerator = 0),
+      (this.enemiesDead = 0),
       (this.eliminatedCitizens = 0),
       (this.enemyOneSpeed = 4),
       (this.enemyTwoSpeed = 6.5),
