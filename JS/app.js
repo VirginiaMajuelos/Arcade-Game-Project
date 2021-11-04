@@ -450,7 +450,7 @@ const gameStart = {
     });
   },
 
-  colisionEnemiesCiticens() {
+  colisionEnemiesCitizens() {
     this.allEnemies.map((enemy, i) => {
       this.allCitizens.map((citizen, j) => {
         if (
@@ -477,7 +477,7 @@ const gameStart = {
   },
 
   clearEnemies() {
-    if (this.colisionPlayerEnemy() || this.colisionEnemiesCiticens()) {
+    if (this.colisionPlayerEnemy() || this.colisionEnemiesCitizens()) {
       return true;
     }
   },
@@ -486,7 +486,7 @@ const gameStart = {
     this.allCitizens = this.allCitizens.filter((citizen) => {
       if (citizen.pos.y > (this.canvasSize.height / 10) * 2.5) {
         return true;
-      } else if (this.colisionEnemiesCiticens()) {
+      } else if (this.colisionEnemiesCitizens()) {
         return true;
       } else {
         this.saveCitizens++;
