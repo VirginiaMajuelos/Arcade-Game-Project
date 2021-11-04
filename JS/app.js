@@ -105,12 +105,12 @@ const gameStart = {
       }
       if (this.player.speed < 5.28) {
         if (this.framesCount % 2000 === 0) {
-          this.createPotion("PocionVerde.png");
+          this.createPotion("GreenPotion.png");
         }
       }
       if (this.enemyOneSpeed > 3.6) {
         if (this.framesCount % 2600 === 0) {
-          this.createPotion("PocionAmarilla.png");
+          this.createPotion("YellowPotion.png");
         }
       }
       if (this.framesCount % 3200 === 0) {
@@ -267,8 +267,8 @@ const gameStart = {
       this.minimunRoadY + (this.canvasSize.height / 4) * this.randomNumberY;
 
     if (
-      this.namePotion == "PocionVerde.png" ||
-      this.namePotion == "PocionAmarilla.png"
+      this.namePotion == "GreenPotion.png" ||
+      this.namePotion == "YellowPotion.png"
     ) {
       this.potionWidth = 50;
       this.potionHeidht = 50;
@@ -431,9 +431,9 @@ const gameStart = {
         this.player.pos.y < potion.pos.y + potion.size.height &&
         this.player.size.height + this.player.pos.y > potion.pos.y
       ) {
-        if (potion.imageName === "PocionVerde.png") {
+        if (potion.imageName === "GreenPotion.png") {
           this.player.speed = 1.1 * this.player.speed;
-        } else if (potion.imageName === "PocionAmarilla.png") {
+        } else if (potion.imageName === "YellowPotion.png") {
           this.enemyTwoSpeed = 0.9 * this.enemyTwoSpeed;
           this.enemyOneSpeed = 0.9 * this.enemyOneSpeed;
         } else if (potion.imageName == "ThanosGlove.png") {
