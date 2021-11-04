@@ -38,18 +38,18 @@ Do you want to try?
 ## Game:<br>
 
 -Start panel:<br>
-<img width="1440" alt="StartPanel" src="https://user-images.githubusercontent.com/85538875/140371693-d91c2ae4-0ee0-46ab-8a67-c19e2c425d0f.png">
+<img width="1000" alt="StartPanel" src="https://user-images.githubusercontent.com/85538875/140371693-d91c2ae4-0ee0-46ab-8a67-c19e2c425d0f.png">
 
 -Enemies:<br>
-<img width="1440" alt="Enemies" src="https://user-images.githubusercontent.com/85538875/140371566-72b1a2fd-c565-4aea-b34d-24b26b9abadf.png">
+<img width="1000" alt="Enemies" src="https://user-images.githubusercontent.com/85538875/140371566-72b1a2fd-c565-4aea-b34d-24b26b9abadf.png">
 
 -Citizens:<br>
-<img width="1440" alt="Citizens" src="https://user-images.githubusercontent.com/85538875/140371845-a178e092-3200-41b2-bbc4-049b846dd9e2.png">
+<img width="1000" alt="Citizens" src="https://user-images.githubusercontent.com/85538875/140371845-a178e092-3200-41b2-bbc4-049b846dd9e2.png">
 
 -Player:<br>
-<img width="1440" alt="Player" src="https://user-images.githubusercontent.com/85538875/140371922-d016e24d-c385-4cd2-89f9-933b113aea24.png">
+<img width="1000" alt="Player" src="https://user-images.githubusercontent.com/85538875/140371922-d016e24d-c385-4cd2-89f9-933b113aea24.png">
 
 -Potions:<br>
-<img width="1440" alt="Potions" src="https://user-images.githubusercontent.com/85538875/140372097-1de10844-4159-409f-97d5-dd36270016be.png">
+<img width="1000" alt="Potions" src="https://user-images.githubusercontent.com/85538875/140372097-1de10844-4159-409f-97d5-dd36270016be.png">
 
 
