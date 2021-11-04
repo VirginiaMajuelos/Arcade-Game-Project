@@ -20,7 +20,7 @@ class Background {
 
   init() {
     this.imageInstance = new Image();
-    this.imageInstance.src = `../../images/backgrounds/${this.imageName}`;
+    this.imageInstance.src = `images/backgrounds/${this.imageName}`;
   }
 
   draw() {
