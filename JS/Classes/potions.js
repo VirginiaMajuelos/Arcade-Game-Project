@@ -22,7 +22,7 @@ class Potions {
 
   init() {
     this.imageInstance = new Image();
-    this.imageInstance.src = `images/${this.imageName}`;
+    this.imageInstance.src = `images/potions/${this.imageName}`;
     setTimeout(() => {
       this.isFinished = true;
     }, 14000);
