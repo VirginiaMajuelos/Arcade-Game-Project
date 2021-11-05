@@ -1,6 +1,6 @@
 # Smash Them!
 
-Save the citizens! You should eliminate all enemies. 
+Save the citizens! <br> You should eliminate all enemies. 
 
 <img width="100" alt="Enemies" src="https://user-images.githubusercontent.com/87578305/140481406-23d0b5eb-90b3-418d-8d13-550de65c07f9.png">
 
@@ -12,10 +12,14 @@ Save the citizens! You should eliminate all enemies.
 Click here to play game: https://alvaroteran-developer.github.io/Arcade-Game-Project/
 
 ## Descriptions:
-Villains have arrived the city, they want attack the citizens. 
-You are Hulk and you should protect the citizens of the enemies. You can move on the all board.
-Citizens should go to the tower to save. There are 5 level: Each level start when the number of citizens saved are 10. But, you lose if the enemies overcomes 10 citizens eliminated.
-Your goal: 60 citizens saved.
+Villains have arrived to the city, they want to attack the citizens. 
+You are Hulk and you should protect them from the enemies. You can move all over the board.
+
+Citizens are save when they arrive to the tower. 
+
+There are 5 levels: you move on to the next level when 10 citizens have been saved. You lose when 10 citizens have been overcome by the enemies. 
+
+Your goal: to save 60 citizens.
 
 ## Technology:
 <ul>
@@ -26,18 +30,18 @@ Your goal: 60 citizens saved.
 
 ## Instructions:
 
-Use the arrow keysboard to move the player around the board with the goal to save all the citizens as possible by fight enemies.
+Use the arrow keysboard to move Hulk around the board with the goal of saving from the enemies as many citizens as possible.
 
 Bonus:
 
-1.Green potion: buff the speed player<br>
-2.Yellow potion: nerf the speed enemies.<br>
+1.Green potion: buff the speed of the player.<br>
+2.Yellow potion: nerf the speed of the enemies.<br>
 3.Thanos glove: eliminate all the enemies on the screen.<br>
-
     
-Score:<br>
-Nº citizens saved<br>
-Nº citizens eliminated<br>
+Score:
+
+Nº citizens saved.<br>
+Nº citizens eliminated.<br>
 Nº enemies eliminated.<br>
 
 If you lose you can play again.
